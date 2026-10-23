@@ -1,0 +1,47 @@
+:root {
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #0f172a;
+  background: transparent;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root,
+#ez-chat-widget-root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: transparent;
+}
+
+#ez-chat-widget-root {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.ez-chat-input.ant-input-affix-wrapper-focused {
+  box-shadow: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+}

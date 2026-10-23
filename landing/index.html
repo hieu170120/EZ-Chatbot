@@ -1,0 +1,3075 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description"
+    content="Nền tảng AI Chatbot Đa Doanh Nghiệp (Multi-Tenant) tích hợp Đặt Lịch Hẹn Salon & Chuẩn Model Context Protocol (MCP). Nhúng dễ dàng trong 5 phút, bảo mật dữ liệu tuyệt đối." />
+  <title>AI Chatbot - Multi-Tenant AI Chatbot & MCP Booking Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      color-scheme: light;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      
+      --primary: #4f46e5;
+      --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --primary-soft: #eef2ff;
+      --primary-hover: #4338ca;
+      
+      --accent: #0284c7;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      
+      --bg: #ffffff;
+      --bg-alt: #f8fafc;
+      --bg-card: #ffffff;
+      --text: #0f172a;
+      --text-heading: #1e1b4b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --border-light: rgba(226, 232, 240, 0.85);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-full: 9999px;
+      
+      --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.05);
+      --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.08);
+      --shadow-primary: 0 8px 20px rgba(79, 70, 229, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select {
+      font-family: inherit;
+    }
+
+    .container {
+      width: min(1240px, calc(100% - 48px));
+      margin-inline: auto;
+    }
+
+    /* Header & Navigation */
+    .header {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+      transition: all 0.3s ease;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--text-heading);
+      letter-spacing: -0.02em;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: var(--primary-gradient);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 1rem;
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .lang-switcher {
+      display: inline-flex;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      padding: 3px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: 0;
+      color: var(--text-muted);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lang-btn.active {
+      background: #fff;
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+
+    .btn-login,
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: 0;
+      cursor: pointer;
+      box-shadow: var(--shadow-primary);
+      transition: all 0.2s ease;
+    }
+
+    .btn-login {
+      padding: 8px 18px;
+      font-size: 0.9rem;
+    }
+
+    .btn-login:hover,
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(79, 70, 229, 0.35);
+    }
+
+    .btn-primary {
+      font-size: 0.98rem;
+      padding: 13px 26px;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #1e293b;
+      font-weight: 700;
+      font-size: 0.98rem;
+      padding: 13px 24px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      transform: translateY(-2px);
+    }
+
+    /* Hero Section with Original Image Background */
+    .hero {
+      position: relative;
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding: 140px 0 80px;
+      text-align: center;
+      background: url("./assets/bg_landingPage.jpg") center top / cover no-repeat;
+    }
+
+    .hero::before {
+      position: absolute;
+      inset: 0;
+      content: "";
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.96) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto 50px;
+    }
+
+    .version-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--primary-soft);
+      border: 1px solid #c7d2fe;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1.15;
+      color: var(--text-heading);
+      letter-spacing: -0.025em;
+      margin-bottom: 22px;
+    }
+
+    .text-gradient {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 760px;
+      margin: 0 auto 34px;
+      line-height: 1.65;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-item h4 {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+
+    .stat-item p {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* Hero Showcase Preview */
+    .hero-showcase {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      border-radius: var(--radius-lg);
+      background: #ffffff;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .showcase-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .showcase-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot-red, .dot-yellow, .dot-green {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+
+    .showcase-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .showcase-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      padding: 24px;
+      background: #f8fafc;
+    }
+
+    /* Section Base */
+    .section {
+      padding: 90px 0;
+      position: relative;
+    }
+
+    .section-alt {
+      background: var(--bg-alt);
+      border-block: 1px solid var(--border);
+    }
+
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--primary);
+      background: var(--primary-soft);
+      border: 1px solid #c7d2fe;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 14px;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 56px;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      font-weight: 900;
+      color: var(--text-heading);
+      letter-spacing: -0.025em;
+      margin-bottom: 14px;
+      line-height: 1.2;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 30px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #a5b4fc;
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+      margin-bottom: 18px;
+    }
+
+    .icon-indigo { background: #eef2ff; color: var(--primary); }
+    .icon-cyan { background: #e0f2fe; color: #0284c7; }
+    .icon-emerald { background: #dcfce7; color: #059669; }
+    .icon-amber { background: #fef3c7; color: #d97706; }
+    .icon-rose { background: #ffe4e6; color: #e11d48; }
+
+    .card h3 {
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.94rem;
+      line-height: 1.6;
+    }
+
+    /* Spotlight: Booking Simulator */
+    .spotlight-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 44px;
+      align-items: center;
+    }
+
+    .spotlight-info h3 {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: var(--text-heading);
+      line-height: 1.25;
+      margin-bottom: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .spotlight-info p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .feature-list {
+      list-style: none;
+      display: grid;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.96rem;
+    }
+
+    .check-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #dcfce7;
+      color: #059669;
+      display: grid;
+      place-items: center;
+      font-size: 0.8rem;
+      font-weight: 900;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Live Booking Chat Simulator */
+    .chat-sim-wrapper {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .sim-header {
+      background: #f8fafc;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sim-bot-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sim-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .sim-status {
+      font-size: 0.75rem;
+      color: #059669;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .sim-status::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    .sim-body {
+      padding: 20px;
+      min-height: 420px;
+      max-height: 480px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: #f1f5f9;
+    }
+
+    .msg {
+      max-width: 84%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .msg-bot {
+      align-self: flex-start;
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .msg-user {
+      align-self: flex-end;
+      background: var(--primary);
+      color: #fff;
+      border-bottom-right-radius: 2px;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+
+    /* Slot Chips */
+    .slot-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .slot-chip {
+      background: #ffffff;
+      border: 1px solid #c7d2fe;
+      color: var(--primary);
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .slot-chip:hover, .slot-chip.selected {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      transform: scale(1.03);
+    }
+
+    /* Summary Card */
+    .summary-card {
+      background: #ffffff;
+      border: 1.5px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 10px;
+      box-shadow: 0 4px 16px rgba(79, 70, 229, 0.12);
+    }
+
+    .summary-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .summary-details {
+      font-size: 0.85rem;
+      display: grid;
+      gap: 6px;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .summary-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-confirm {
+      flex: 1;
+      background: #10b981;
+      color: #fff;
+      border: 0;
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-confirm:hover { background: #059669; }
+
+    .btn-cancel {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Confirmation Card */
+    .confirmed-card {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 10px;
+    }
+
+    .confirmed-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #059669;
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+
+    .confirmed-code {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #065f46;
+      background: #d1fae5;
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      margin: 4px 0;
+    }
+
+    /* MCP Architecture Visualizer */
+    .mcp-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mcp-diagram {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .mcp-node {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mcp-node.active-node {
+      border-color: var(--primary);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.12);
+    }
+
+    .mcp-node h4 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      margin-bottom: 4px;
+    }
+
+    .mcp-node p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .mcp-arrow {
+      color: var(--primary);
+      font-size: 1.2rem;
+      font-weight: 900;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .mcp-arrow-label {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-soft);
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .mcp-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .mcp-tool-pill {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mcp-tool-pill::before {
+      content: "⚡";
+      font-size: 0.85rem;
+    }
+
+    /* Admin Dashboard Tabs */
+    .tabs-wrapper {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .tab-nav {
+      display: flex;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 0;
+      color: var(--text-muted);
+      padding: 16px 24px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-heading);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      background: #ffffff;
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-content {
+      padding: 32px;
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Calendar View Mock */
+    .calendar-mock {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .calendar-mock-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: 80px repeat(3, 1fr);
+      border-collapse: collapse;
+    }
+
+    .cal-header-cell {
+      padding: 12px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      background: #f1f5f9;
+      color: var(--text-heading);
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .cal-cell {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      min-height: 56px;
+      font-size: 0.82rem;
+    }
+
+    .cal-time {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: #f8fafc;
+    }
+
+    .cal-booking-block {
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .booking-confirmed {
+      background: #dcfce7;
+      border-left: 3px solid #10b981;
+      color: #065f46;
+    }
+
+    .booking-completed {
+      background: #f1f5f9;
+      border-left: 3px solid #94a3b8;
+      color: #475569;
+    }
+
+    /* Appearance Customizer Mock */
+    .appearance-mock-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      margin-bottom: 8px;
+    }
+
+    .color-picker-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .color-swatch {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease;
+    }
+
+    .color-swatch.active {
+      transform: scale(1.15);
+      border-color: #0f172a;
+    }
+
+    .form-input {
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+    }
+
+    /* Conversation Monitor Tab 3 Rich Styles */
+    .monitor-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .monitor-stat-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .monitor-stat-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .monitor-stat-num {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: var(--text-heading);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .monitor-stat-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .monitor-table-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .monitor-table-header {
+      padding: 14px 20px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+    }
+
+    .filter-pill {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-pill.active, .filter-pill:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .monitor-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .monitor-table th {
+      text-align: left;
+      padding: 12px 18px;
+      background: #f1f5f9;
+      color: var(--text-heading);
+      font-weight: 800;
+      font-size: 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .monitor-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .monitor-table tr:hover {
+      background: #f8fafc;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .badge-active-bot {
+      background: #dcfce7;
+      color: #059669;
+      border: 1px solid #bbf7d0;
+    }
+
+    .badge-waiting-agent {
+      background: #fef3c7;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-closed {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn-action-small {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: var(--text-heading);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-action-small:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .btn-takeover {
+      background: #f59e0b;
+      color: #fff;
+      border-color: #d97706;
+    }
+    .btn-takeover:hover {
+      background: #d97706;
+    }
+
+    /* Developer Quickstart */
+    .quickstart-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .code-container {
+      position: relative;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+
+    .code-snippet {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: #a5b4fc;
+      line-height: 1.7;
+    }
+
+    .btn-copy {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-copy:hover {
+      background: var(--primary);
+    }
+
+    /* Pricing Section */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .pricing-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .pricing-card.popular {
+      border: 2px solid var(--primary);
+      box-shadow: 0 12px 32px rgba(99, 102, 241, 0.15);
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: -14px;
+      right: 24px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .pricing-price {
+      margin: 20px 0;
+    }
+
+    .pricing-amount {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--text-heading);
+      letter-spacing: -0.02em;
+    }
+
+    .pricing-period {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .pricing-features {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    .pricing-features li::before {
+      content: "✓";
+      color: #10b981;
+      font-weight: 900;
+    }
+
+    /* Testimonials */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .testimonial-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .author-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c7d2fe, #818cf8);
+      color: #312e81;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    /* CTA Section */
+    .cta-banner {
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 60px 36px;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .cta-banner h2 {
+      font-size: 2.3rem;
+      font-weight: 900;
+      color: var(--text-heading);
+      margin-bottom: 14px;
+      letter-spacing: -0.02em;
+    }
+
+    .cta-banner p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 660px;
+      margin: 0 auto 32px;
+    }
+
+    /* Footer - Gradient Theme */
+    .footer {
+      background: var(--primary-gradient);
+      color: #ffffff;
+      padding: 80px 0 30px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr repeat(3, 1fr);
+      gap: 40px;
+      margin-bottom: 50px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 50px;
+    }
+
+    .footer-col h4 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 18px;
+      color: #ffffff;
+    }
+
+    .footer-col ul {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .footer-col a {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.92rem;
+      transition: color 0.2s ease;
+    }
+
+    .footer-col a:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      color: rgba(255, 255, 255, 0.8);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .footer-links a:hover {
+      color: #ffffff;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .features-grid, .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+      .spotlight-grid, .showcase-body, .appearance-mock-grid, .monitor-stats-row { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 480px; margin-inline: auto; }
+      .footer-grid { grid-template-columns: repeat(2, 1fr); }
+      .mcp-diagram { grid-template-columns: 1fr; gap: 20px; }
+      .mcp-arrow { transform: rotate(90deg); }
+      .mcp-tools-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .features-grid, .testimonials-grid, .footer-grid { grid-template-columns: 1fr; }
+      .header-inner { gap: 12px; }
+      .monitor-table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="#top" class="brand" aria-label="AI Chatbot">
+        <span class="brand-icon">AI</span>
+        <span>AI Chatbot</span>
+      </a>
+      
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#features" data-i18n="nav.features">Tính Năng</a></li>
+          <li><a href="#booking" data-i18n="nav.booking">Đặt Lịch Salon</a></li>
+          <li><a href="#mcp" data-i18n="nav.mcp">Kiến Trúc MCP</a></li>
+          <li><a href="#admin" data-i18n="nav.admin">Quản Trị Admin</a></li>
+          <li><a href="#developer" data-i18n="nav.developer">Nhà Phát Triển</a></li>
+          <li><a href="#pricing" data-i18n="nav.pricing">Bảng Giá</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="lang-switcher" aria-label="Language">
+          <button class="lang-btn" type="button" data-lang="en">EN</button>
+          <button class="lang-btn active" type="button" data-lang="vi">VI</button>
+        </div>
+        <a class="btn-login" href="https://dashboard.intern2026.zodinet.tech/login" target="_blank" data-i18n="nav.login">
+          Sign In
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <div class="version-pill">
+            <span>✨</span>
+            <span data-i18n="hero.pill">AI Chatbot Đa Doanh Nghiệp + Đặt Lịch Hội Thoại Chuẩn MCP</span>
+          </div>
+          <h1 class="hero-title">
+            <span data-i18n="hero.titlePrefix">Intelligent Conversations with </span>
+            <span class="text-gradient" data-i18n="hero.titleHighlight">AI Chatbot</span>
+          </h1>
+          <p class="hero-subtitle" data-i18n="hero.subtitle">
+            Nâng tầm trải nghiệm khách hàng với nền tảng AI Chatbot thông minh. Tự động hóa hỗ trợ 24/7, chốt lịch hẹn tức thì và tích hợp nhanh chóng vào mọi website.
+          </p>
+          <div class="hero-actions">
+            <a class="btn-primary" href="#booking" data-i18n="hero.tryDemo">
+              Bắt Đầu Ngay
+            </a>
+            <a class="btn-secondary" href="#pricing" data-i18n="hero.embedNow">
+              Xem Demo
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <h4 data-i18n="stats.valEmbed">&lt; 5 Phút</h4>
+              <p data-i18n="stats.embed">Widget Embed</p>
+            </div>
+            <div class="stat-item">
+              <h4 data-i18n="stats.valIsolation">100%</h4>
+              <p data-i18n="stats.isolation">Data Isolation</p>
+            </div>
+            <div class="stat-item">
+              <h4 data-i18n="stats.valConflict">2 Lớp</h4>
+              <p data-i18n="stats.conflict">Conflict Guard</p>
+            </div>
+            <div class="stat-item">
+              <h4 data-i18n="stats.valMcp">Streamable</h4>
+              <p data-i18n="stats.mcp">MCP Standard HTTP</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Interactive Showcase -->
+        <div class="hero-showcase">
+          <div class="showcase-header">
+            <div class="showcase-dots">
+              <div class="dot-red"></div>
+              <div class="dot-yellow"></div>
+              <div class="dot-green"></div>
+            </div>
+            <div class="showcase-title" data-i18n="hero.showcaseTitle">Multi-Tenant AI + MCP Booking Engine</div>
+            <div style="font-size:0.75rem; color:#10b981; font-weight:700;">● Online</div>
+          </div>
+          <div class="showcase-body">
+            <!-- Left Mockup: Chat Booking Flow -->
+            <div style="background:#ffffff; border-radius:12px; padding:20px; border:1px solid #e2e8f0; box-shadow:0 2px 8px rgba(15,23,42,0.04); text-align:left;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:14px; font-size:0.85rem; font-weight:700;">
+                <span style="color:#4f46e5;">💬 Visitor Chat Widget</span>
+                <span style="color:#64748b; font-size:0.75rem;">Salon Booking</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:10px; font-size:0.85rem;">
+                <div style="background:#f1f5f9; color:#0f172a; padding:10px 14px; border-radius:10px; align-self:flex-start; border:1px solid #e2e8f0;" data-i18n="hero.mockBot1">
+                  Chào bạn! Tôi có thể giúp gì cho bạn hôm nay? Tôi có thể giải đáp thắc mắc hoặc hỗ trợ đặt lịch hẹn làm tóc.
+                </div>
+                <div style="background:#4f46e5; padding:10px 14px; border-radius:10px; align-self:flex-end; color:#fff;" data-i18n="hero.mockUser">
+                  Tôi muốn đặt lịch cắt tóc nữ hôm nay với Stylist Lan
+                </div>
+                <div style="background:#f1f5f9; color:#0f172a; padding:10px 14px; border-radius:10px; align-self:flex-start; border:1px solid #e2e8f0;">
+                  <span data-i18n="hero.mockBot2">Tuyệt vời! Dưới đây là các khung giờ khả dụng của Stylist Lan hôm nay:</span>
+                  <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
+                    <span style="background:#eef2ff; color:#4f46e5; border:1px solid #c7d2fe; padding:4px 8px; border-radius:99px; font-size:0.75rem; font-weight:700;">14:00 · Stylist Lan</span>
+                    <span style="background:#eef2ff; color:#4f46e5; border:1px solid #c7d2fe; padding:4px 8px; border-radius:99px; font-size:0.75rem; font-weight:700;">15:30 · Stylist Lan</span>
+                    <span style="background:#eef2ff; color:#4f46e5; border:1px solid #c7d2fe; padding:4px 8px; border-radius:99px; font-size:0.75rem; font-weight:700;">17:00 · Stylist Lan</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Mockup: Admin Day Calendar View -->
+            <div style="background:#ffffff; border-radius:12px; padding:20px; border:1px solid #e2e8f0; box-shadow:0 2px 8px rgba(15,23,42,0.04); text-align:left;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:14px; font-size:0.85rem; font-weight:700;">
+                <span style="color:#0284c7;">📅 Admin Day Calendar</span>
+                <span style="color:#059669; font-size:0.75rem;">● Realtime Sync</span>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.8rem;">
+                <div style="background:#f8fafc; padding:12px; border-radius:8px; border-left:3px solid #10b981; border:1px solid #e2e8f0; border-left-width:3px;">
+                  <div style="font-weight:700; color:#0f172a;">09:00 - Trần Thị B</div>
+                  <div style="color:#64748b;" data-i18n="hero.mockCal1">Cắt tóc nữ · Lan</div>
+                  <span style="color:#059669; font-weight:700; font-size:0.7rem;">● Confirmed</span>
+                </div>
+                <div style="background:#f8fafc; padding:12px; border-radius:8px; border-left:3px solid #10b981; border:1px solid #e2e8f0; border-left-width:3px;">
+                  <div style="font-weight:700; color:#0f172a;">10:00 - Nguyễn Văn A</div>
+                  <div style="color:#64748b;" data-i18n="hero.mockCal2">Cắt tóc nam · Bình</div>
+                  <span style="color:#059669; font-weight:700; font-size:0.7rem;">● Confirmed</span>
+                </div>
+                <div style="background:#f8fafc; padding:12px; border-radius:8px; border-left:3px solid #0284c7; border:1px solid #e2e8f0; border-left-width:3px;">
+                  <div style="font-weight:700; color:#0f172a;">14:00 - Lê Hoàng C</div>
+                  <div style="color:#64748b;" data-i18n="hero.mockCal3">Nhuộm tóc · Lan</div>
+                  <span style="color:#0284c7; font-weight:700; font-size:0.7rem;">#BK-2849</span>
+                </div>
+                <div style="background:#f8fafc; border:1px dashed #cbd5e1; padding:12px; border-radius:8px; display:grid; place-items:center; color:#94a3b8;" data-i18n="hero.mockCalFree">
+                  + Trống lúc 15:30
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Features Section -->
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-badge" data-i18n="features.badge">Kiến Trúc & Điểm Mạnh</div>
+          <h2 class="section-title" data-i18n="features.title">Tại Sao Chọn Chúng Tôi</h2>
+          <p class="section-desc" data-i18n="features.desc">Khám phá các giải pháp công nghệ vượt trội giúp doanh nghiệp tối ưu vận hành và nâng cao trải nghiệm khách hàng.</p>
+        </div>
+
+        <div class="features-grid">
+          <!-- Card 1: Multi-Tenancy -->
+          <article class="card">
+            <div class="card-icon icon-indigo">🏢</div>
+            <h3 data-i18n="feat.1.title">Multi-Tenancy Tuyệt Đối</h3>
+            <p data-i18n="feat.1.desc">Mỗi website sở hữu một định danh độc lập. Cơ sở tri thức, lịch hẹn và lịch sử trò chuyện được cách ly an toàn 100%.</p>
+          </article>
+
+          <!-- Card 2: RAG Knowledge Base -->
+          <article class="card">
+            <div class="card-icon icon-cyan">📚</div>
+            <h3 data-i18n="feat.2.title">Custom RAG & Huấn Luyện Tri Thức</h3>
+            <p data-i18n="feat.2.desc">Huấn luyện AI bằng tài liệu riêng của doanh nghiệp. Tự động trích xuất và tạo vector embedding từ PDF, Markdown, TXT, HTML.</p>
+          </article>
+
+          <!-- Card 3: MCP Agent Tooling -->
+          <article class="card">
+            <div class="card-icon icon-emerald">⚡</div>
+            <h3 data-i18n="feat.3.title">Chuẩn Model Context Protocol</h3>
+            <p data-i18n="feat.3.desc">Agent tự động phát hiện và gọi tool thông qua giao thức Streamable HTTP với bảo mật Tenant Context Header.</p>
+          </article>
+
+          <!-- Card 4: Conversational Booking -->
+          <article class="card">
+            <div class="card-icon icon-amber">🗓️</div>
+            <h3 data-i18n="feat.4.title">Đặt Lịch Hội Thoại Tự Động</h3>
+            <p data-i18n="feat.4.desc">Tự động nhận diện ý định đặt lịch, gợi ý khung giờ thông minh qua slot chips, tóm tắt thông tin và xác nhận trực tiếp.</p>
+          </article>
+
+          <!-- Card 5: 2-Layer Conflict Guard -->
+          <article class="card">
+            <div class="card-icon icon-rose">🛡️</div>
+            <h3 data-i18n="feat.5.title">Bảo Vệ Chống Trùng Lịch 2 Lớp</h3>
+            <p data-i18n="feat.5.desc">Kết hợp ràng buộc PostgreSQL GiST tại cơ sở dữ liệu và truy vấn pre-check SELECT ngăn ngừa triệt để tình trạng double-booking.</p>
+          </article>
+
+          <!-- Card 6: Secure BYOK Proxy -->
+          <article class="card">
+            <div class="card-icon icon-indigo">🔑</div>
+            <h3 data-i18n="feat.6.title">Bảo Mật OpenAI Key Proxy (BYOK)</h3>
+            <p data-i18n="feat.6.desc">Cơ chế quản lý API Key mã hóa phía máy chủ, không bao giờ để lộ key ra ngoài trình duyệt của khách hàng.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Spotlight: Booking & Live Simulator Section -->
+    <section class="section section-alt" id="booking">
+      <div class="container">
+        <div class="spotlight-grid">
+          <div class="spotlight-info">
+            <div class="section-badge" data-i18n="sim.badge">Trải Nghiệm Thực Tế</div>
+            <h3 data-i18n="sim.title">Đặt Lịch Hẹn Trực Tiếp Ngay Trong Khung Chat</h3>
+            <p data-i18n="sim.desc">Không cần điền form rườm rà. Chatbot tự động hướng dẫn khách chọn dịch vụ, đề xuất các slot còn trống và hoàn tất lịch hẹn trong chớp mắt.</p>
+            
+            <ul class="feature-list">
+              <li>
+                <div class="check-icon">✓</div>
+                <div><strong data-i18n="sim.f1.title">Khung Giờ Chọn Nhanh (Slot Chips):</strong> <span data-i18n="sim.f1.desc">Các khung giờ khả dụng được hiển thị dạng chip bấm nhanh, tự động lọc theo chuyên viên yêu thích.</span></div>
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                <div><strong data-i18n="sim.f2.title">Thẻ Tóm Tắt Đặt Lịch (Summary Card):</strong> <span data-i18n="sim.f2.desc">Khách hàng kiểm tra lại dịch vụ, thời gian, stylist và số điện thoại trước khi xác nhận.</span></div>
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                <div><strong data-i18n="sim.f3.title">Tự Động Xác Nhận & Cập Nhật Lịch:</strong> <span data-i18n="sim.f3.desc">Cấp mã lịch hẹn, cập nhật tức thì vào Admin Calendar và gửi email thông báo.</span></div>
+              </li>
+            </ul>
+
+            <div style="display:flex; gap:12px;">
+              <button class="btn-primary" type="button" id="btnResetSim" data-i18n="sim.resetBtn">
+                🔄 Bắt Đầu Lại Giả Lập
+              </button>
+            </div>
+          </div>
+
+          <!-- Interactive Simulator Widget -->
+          <div class="chat-sim-wrapper">
+            <div class="sim-header">
+              <div class="sim-bot-info">
+                <div class="sim-avatar">AI</div>
+                <div>
+                  <div style="font-weight:700; font-size:0.9rem; color:var(--text-heading);">Salon Beauty Bot</div>
+                  <div class="sim-status" data-i18n="sim.status">Online · Sẵn sàng đặt lịch</div>
+                </div>
+              </div>
+              <div style="font-size:0.75rem; color:#64748b; font-family:var(--font-mono);">Salon Assistant</div>
+            </div>
+
+            <div class="sim-body" id="simMessages">
+              <!-- Messages generated dynamically by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MCP Architecture Showcase Section -->
+    <section class="section" id="mcp">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-badge" data-i18n="mcp.badge">Kiến Trúc Microservice</div>
+          <h2 class="section-title" data-i18n="mcp.title">Giao Thức Model Context Protocol (MCP)</h2>
+          <p class="section-desc" data-i18n="mcp.desc">ez-mcp-server vận hành độc lập qua Streamable HTTP với chữ ký xác thực context header đảm bảo an toàn đa người dùng.</p>
+        </div>
+
+        <div class="mcp-box">
+          <div class="mcp-diagram">
+            <!-- Node 1: Chat Agent -->
+            <div class="mcp-node active-node">
+              <div style="font-size:1.8rem; margin-bottom:6px;">🤖</div>
+              <h4>Chat Agent</h4>
+              <div style="font-size:0.75rem; color:#4f46e5; margin-top:6px; font-weight:700;">Per-Session MCP Client</div>
+            </div>
+
+            <!-- Arrow 1 -->
+            <div class="mcp-arrow">
+              <span>➔</span>
+              <span class="mcp-arrow-label">Streamable HTTP /mcp</span>
+              <span class="mcp-arrow-label">Signed Tenant Context</span>
+            </div>
+
+            <!-- Node 2: MCP Server -->
+            <div class="mcp-node active-node" style="border-color:#0284c7;">
+              <div style="font-size:1.8rem; margin-bottom:6px;">⚡</div>
+              <h4>ez-mcp-server</h4>
+              <div style="font-size:0.75rem; color:#0284c7; margin-top:6px; font-weight:700;">Pure Tool Gateway</div>
+            </div>
+
+            <!-- Arrow 2 -->
+            <div class="mcp-arrow">
+              <span>➔</span>
+              <span class="mcp-arrow-label">REST API Internal</span>
+              <span class="mcp-arrow-label">Secret Guard</span>
+            </div>
+
+            <!-- Node 3: Core API Services -->
+            <div class="mcp-node">
+              <div style="font-size:1.8rem; margin-bottom:6px;">🗄️</div>
+              <h4>Core Services</h4>
+              <div style="font-size:0.75rem; color:#059669; margin-top:6px; font-weight:700;">PostgreSQL + Vector DB</div>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="font-size:0.92rem; font-weight:800; color:var(--text-heading); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:14px;" data-i18n="mcp.toolsTitle">
+              Các Công Cụ Được Đăng Ký Trong MCP Server:
+            </h4>
+            <div class="mcp-tools-grid">
+              <div class="mcp-tool-pill">searchKnowledge</div>
+              <div class="mcp-tool-pill">listDocuments</div>
+              <div class="mcp-tool-pill">getAvailableSlots</div>
+              <div class="mcp-tool-pill">createBooking</div>
+              <div class="mcp-tool-pill">cancelBooking</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Admin Dashboard Section -->
+    <section class="section section-alt" id="admin">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-badge" data-i18n="admin.badge">Trung Tâm Quản Trị</div>
+          <h2 class="section-title" data-i18n="admin.title">Quản Lý Toàn Diện Trên Một Bảng Điều Khiển</h2>
+          <p class="section-desc" data-i18n="admin.desc">Theo dõi lịch hẹn theo ngày, tùy biến giao diện widget thời gian thực và giám sát các cuộc trò chuyện dễ dàng.</p>
+        </div>
+
+        <div class="tabs-wrapper">
+          <div class="tab-nav">
+            <button class="tab-btn active" data-tab="tab-calendar">
+              <span>📅</span> <span data-i18n="admin.tab1">Lịch Hẹn Theo Ngày (Calendar Day View)</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-appearance">
+              <span>🎨</span> <span data-i18n="admin.tab2">Tùy Biến Giao Diện (Live Preview)</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-status">
+              <span>📊</span> <span data-i18n="admin.tab3">Giám Sát Trạng Thái Hội Thoại</span>
+            </button>
+          </div>
+
+          <!-- Tab 1: Day Calendar -->
+          <div class="tab-content active" id="tab-calendar">
+            <div class="calendar-mock">
+              <div class="calendar-mock-header">
+                <div style="font-weight:800; font-size:1.05rem; color:var(--text-heading);" data-i18n="admin.calTitle">Booking Calendar — 2026-07-05 (Hôm nay)</div>
+                <div style="display:flex; gap:10px;">
+                  <span style="background:#dcfce7; color:#059669; font-weight:700; padding:4px 10px; border-radius:6px; font-size:0.8rem;" data-i18n="admin.calConfirmed">4 Confirmed</span>
+                  <span style="background:#f1f5f9; color:#475569; font-weight:700; padding:4px 10px; border-radius:6px; font-size:0.8rem;" data-i18n="admin.calCompleted">1 Completed</span>
+                </div>
+              </div>
+
+              <div class="calendar-grid">
+                <!-- Header Row -->
+                <div class="cal-header-cell" data-i18n="admin.calColTime">Khung Giờ</div>
+                <div class="cal-header-cell">Stylist Lan</div>
+                <div class="cal-header-cell">Stylist Bình</div>
+                <div class="cal-header-cell" data-i18n="admin.calColWalkin">Khách Vãng Lai (Walk-in)</div>
+
+                <!-- 09:00 -->
+                <div class="cal-cell cal-time">09:00</div>
+                <div class="cal-cell">
+                  <div class="cal-booking-block booking-confirmed">
+                    <div data-i18n="admin.calBook1">Trần Thị B · Cắt tóc nữ</div>
+                    <div style="font-size:0.7rem; opacity:0.85;">#BK-2847 (Confirmed)</div>
+                  </div>
+                </div>
+                <div class="cal-cell"></div>
+                <div class="cal-cell"></div>
+
+                <!-- 10:00 -->
+                <div class="cal-cell cal-time">10:00</div>
+                <div class="cal-cell"></div>
+                <div class="cal-cell">
+                  <div class="cal-booking-block booking-confirmed">
+                    <div data-i18n="admin.calBook2">Nguyễn Văn A · Cắt tóc nam</div>
+                    <div style="font-size:0.7rem; opacity:0.85;">#BK-2848 (Confirmed)</div>
+                  </div>
+                </div>
+                <div class="cal-cell"></div>
+
+                <!-- 14:00 -->
+                <div class="cal-cell cal-time">14:00</div>
+                <div class="cal-cell">
+                  <div class="cal-booking-block booking-completed">
+                    <div data-i18n="admin.calBook3">Lê Hoàng C · Nhuộm tóc</div>
+                    <div style="font-size:0.7rem; opacity:0.85;">#BK-2849 (✓ Completed)</div>
+                  </div>
+                </div>
+                <div class="cal-cell"></div>
+                <div class="cal-cell">
+                  <div class="cal-booking-block booking-confirmed">
+                    <div data-i18n="admin.calBook4">Khách vãng lai · Tỉa tóc</div>
+                    <div style="font-size:0.7rem; opacity:0.85;">#BK-2850 (Confirmed)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Appearance Customizer -->
+          <div class="tab-content" id="tab-appearance">
+            <div class="appearance-mock-grid">
+              <div>
+                <h4 style="font-size:1.15rem; font-weight:800; color:var(--text-heading); margin-bottom:16px;" data-i18n="admin.appTitle">Tùy Chỉnh Màu Sắc & Tin Nhắn Chào</h4>
+                <div class="form-group">
+                  <label class="form-label" data-i18n="admin.brandColor">Màu Chủ Đạo Thương Hiệu</label>
+                  <div class="color-picker-row">
+                    <div class="color-swatch active" style="background:#4f46e5;" data-color="#4f46e5"></div>
+                    <div class="color-swatch" style="background:#0284c7;" data-color="#0284c7"></div>
+                    <div class="color-swatch" style="background:#10b981;" data-color="#10b981"></div>
+                    <div class="color-swatch" style="background:#e11d48;" data-color="#e11d48"></div>
+                    <div class="color-swatch" style="background:#8b5cf6;" data-color="#8b5cf6"></div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" data-i18n="admin.greetingLabel">Lời Chào Mặc Định</label>
+                  <input class="form-input" id="inputGreeting" type="text" value="Chào bạn! Tôi có thể giúp gì cho bạn hôm nay?" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" data-i18n="admin.botNameLabel">Tên Hiển Thị Bot</label>
+                  <input class="form-input" id="inputBotName" type="text" value="Trợ lý AI" />
+                </div>
+              </div>
+
+              <!-- Preview Pane -->
+              <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:20px;">
+                <div style="font-size:0.8rem; font-weight:700; color:#64748b; margin-bottom:12px;" data-i18n="admin.livePreview">Live Preview</div>
+                <div style="background:#ffffff; border-radius:12px; overflow:hidden; border:1px solid #cbd5e1; box-shadow:var(--shadow-sm);">
+                  <div id="previewHeader" style="background:#4f46e5; color:#fff; padding:12px 16px; font-weight:700; font-size:0.9rem; display:flex; align-items:center; gap:8px;">
+                    <span style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px; font-size:0.75rem;">AI</span>
+                    <span id="previewBotName">Trợ lý AI</span>
+                  </div>
+                  <div style="padding:16px; font-size:0.85rem; color:#0f172a; min-height:100px;">
+                    <div id="previewGreeting" style="background:#f1f5f9; padding:10px 14px; border-radius:8px; border:1px solid #e2e8f0;">
+                      Chào bạn! Tôi có thể giúp gì cho bạn hôm nay?
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Rich Live Conversation Status Monitor -->
+          <div class="tab-content" id="tab-status">
+            <!-- 3 Stat Metrics Cards with Realtime details -->
+            <div class="monitor-stats-row">
+              <div class="monitor-stat-card">
+                <div>
+                  <div class="monitor-stat-title" style="color:#059669;">
+                    <span>🟢</span> <span data-i18n="admin.statusActive">Active Bot Chats</span>
+                  </div>
+                  <div class="monitor-stat-num">8</div>
+                  <div class="monitor-stat-desc" data-i18n="admin.statusActiveDesc">Avg Response: 1.2s · 24 MCP Tool calls</div>
+                </div>
+                <div style="font-size:1.6rem; opacity:0.8;">🤖</div>
+              </div>
+
+              <div class="monitor-stat-card">
+                <div>
+                  <div class="monitor-stat-title" style="color:#d97706;">
+                    <span>🟡</span> <span data-i18n="admin.statusWaiting">Waiting for Agent</span>
+                  </div>
+                  <div class="monitor-stat-num">2</div>
+                  <div class="monitor-stat-desc" data-i18n="admin.statusWaitingDesc">Avg Wait: ~45s · Priority Queued</div>
+                </div>
+                <div style="font-size:1.6rem; opacity:0.8;">🙋</div>
+              </div>
+
+              <div class="monitor-stat-card">
+                <div>
+                  <div class="monitor-stat-title" style="color:#64748b;">
+                    <span>⚪</span> <span data-i18n="admin.statusClosed">Resolved Today</span>
+                  </div>
+                  <div class="monitor-stat-num">14</div>
+                  <div class="monitor-stat-desc" data-i18n="admin.statusClosedDesc">94% Satisfaction · 6 Bookings Completed</div>
+                </div>
+                <div style="font-size:1.6rem; opacity:0.8;">✅</div>
+              </div>
+            </div>
+
+            <!-- Live Active Conversations Feed Table -->
+            <div class="monitor-table-box">
+              <div class="monitor-table-header">
+                <div>
+                  <div style="font-weight:800; font-size:0.95rem; color:var(--text-heading);" data-i18n="admin.feedTitle">
+                    Danh Sách Phiên Hội Thoại Thời Gian Thực
+                  </div>
+                  <div style="font-size:0.78rem; color:var(--text-muted);" data-i18n="admin.feedDesc">
+                    Theo dõi trực tiếp hành vi khách truy cập, công cụ MCP được kích hoạt và trạng thái xử lý
+                  </div>
+                </div>
+                <div class="filter-pills">
+                  <button class="filter-pill active" type="button" data-filter="all" data-i18n="admin.filterAll">Tất cả (24)</button>
+                  <button class="filter-pill" type="button" data-filter="active" data-i18n="admin.filterActive">Đang Chat (8)</button>
+                  <button class="filter-pill" type="button" data-filter="waiting" data-i18n="admin.filterWaiting">Chờ Hỗ Trợ (2)</button>
+                  <button class="filter-pill" type="button" data-filter="resolved" data-i18n="admin.filterResolved">Đã Xong (14)</button>
+                </div>
+              </div>
+
+              <table class="monitor-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="table.visitor">Khách Hàng (Visitor)</th>
+                    <th data-i18n="table.page">Trang Hiện Tại</th>
+                    <th data-i18n="table.intent">Ý Định & Thao Tác MCP</th>
+                    <th data-i18n="table.status">Trạng Thái</th>
+                    <th data-i18n="table.time">Thời Gian</th>
+                    <th data-i18n="table.action" style="text-align:right;">Thao Tác</th>
+                  </tr>
+                </thead>
+                <tbody id="conversationTableBody">
+                  <tr data-status="active">
+                    <td>
+                      <div style="font-weight:700; color:var(--text-heading);" data-i18n="admin.row1Visitor">Khách #VIS-9284</div>
+                      <div style="font-size:0.75rem; color:var(--text-muted);" data-i18n="admin.row1Loc">IP: 14.162.x.x · Hà Nội</div>
+                    </td>
+                    <td><code style="font-family:var(--font-mono); font-size:0.8rem; background:#f1f5f9; padding:2px 6px; border-radius:4px;">/booking</code></td>
+                    <td>
+                      <div style="font-weight:600; color:var(--text-heading);" data-i18n="admin.row1Intent">Đặt lịch cắt tóc nữ (Slot 14:00)</div>
+                      <div style="font-size:0.72rem; color:var(--primary); font-family:var(--font-mono);">⚡ getAvailableSlots(stylist: Lan)</div>
+                    </td>
+                    <td><span class="badge-status badge-active-bot" data-i18n="admin.statusChatting">● Đang Chat với Bot</span></td>
+                    <td style="color:var(--text-muted); font-size:0.8rem;" data-i18n="admin.timeJustNow">Vừa xong</td>
+                    <td style="text-align:right;">
+                      <button class="btn-action-small" type="button" data-i18n="admin.actionLive">Xem Live</button>
+                    </td>
+                  </tr>
+
+                  <tr data-status="active">
+                    <td>
+                      <div style="font-weight:700; color:var(--text-heading);" data-i18n="admin.row2Visitor">Khách #VIS-9281</div>
+                      <div style="font-size:0.75rem; color:var(--text-muted);" data-i18n="admin.row2Loc">IP: 115.78.x.x · TP.HCM</div>
+                    </td>
+                    <td><code style="font-family:var(--font-mono); font-size:0.8rem; background:#f1f5f9; padding:2px 6px; border-radius:4px;">/services/dye-hair</code></td>
+                    <td>
+                      <div style="font-weight:600; color:var(--text-heading);" data-i18n="admin.row2Intent">Hỏi giá nhuộm Balayage & Phục hồi</div>
+                      <div style="font-size:0.72rem; color:var(--primary); font-family:var(--font-mono);">⚡ searchKnowledge(query: "bảng giá nhuộm")</div>
+                    </td>
+                    <td><span class="badge-status badge-active-bot" data-i18n="admin.statusChatting">● Đang Chat với Bot</span></td>
+                    <td style="color:var(--text-muted); font-size:0.8rem;" data-i18n="admin.time1m">1 phút trước</td>
+                    <td style="text-align:right;">
+                      <button class="btn-action-small" type="button" data-i18n="admin.actionLive">Xem Live</button>
+                    </td>
+                  </tr>
+
+                  <tr data-status="waiting" style="background:#fffbeb;">
+                    <td>
+                      <div style="font-weight:700; color:#b45309;" data-i18n="admin.row3Visitor">Khách #VIS-9279</div>
+                      <div style="font-size:0.75rem; color:#d97706;" data-i18n="admin.row3Loc">IP: 42.118.x.x · Đà Nẵng</div>
+                    </td>
+                    <td><code style="font-family:var(--font-mono); font-size:0.8rem; background:#fef3c7; padding:2px 6px; border-radius:4px;">/contact</code></td>
+                    <td>
+                      <div style="font-weight:600; color:#92400e;" data-i18n="admin.row3Intent">Yêu cầu tư vấn gói cô dâu VIP 5 người</div>
+                      <div style="font-size:0.72rem; color:#b45309;" data-i18n="admin.row3Sub">Khách bấm "Gặp chuyên viên tư vấn"</div>
+                    </td>
+                    <td><span class="badge-status badge-waiting-agent" data-i18n="admin.statusWaitingAgent">🟡 Chờ Nhân Viên</span></td>
+                    <td style="color:#b45309; font-size:0.8rem; font-weight:700;" data-i18n="admin.time2m">2 phút trước</td>
+                    <td style="text-align:right;">
+                      <button class="btn-action-small btn-takeover" type="button" data-i18n="admin.actionTakeover">Tiếp Quản</button>
+                    </td>
+                  </tr>
+
+                  <tr data-status="resolved">
+                    <td>
+                      <div style="font-weight:700; color:var(--text-heading);" data-i18n="admin.row4Visitor">Khách #VIS-9275 (Trần Thị B)</div>
+                      <div style="font-size:0.75rem; color:var(--text-muted);" data-i18n="admin.row4Sub">0912-345-678 · Khách quen</div>
+                    </td>
+                    <td><code style="font-family:var(--font-mono); font-size:0.8rem; background:#f1f5f9; padding:2px 6px; border-radius:4px;">/booking</code></td>
+                    <td>
+                      <div style="font-weight:600; color:var(--text-heading);" data-i18n="admin.row4Intent">Đã tạo thành công lịch hẹn #BK-2847</div>
+                      <div style="font-size:0.72rem; color:#059669; font-family:var(--font-mono);">⚡ createBooking(code: #BK-2847)</div>
+                    </td>
+                    <td><span class="badge-status badge-closed" data-i18n="admin.statusDone">✓ Đã Hoàn Thành</span></td>
+                    <td style="color:var(--text-muted); font-size:0.8rem;" data-i18n="admin.time8m">8 phút trước</td>
+                    <td style="text-align:right;">
+                      <button class="btn-action-small" type="button" data-i18n="admin.actionDetail">Xem Chi Tiết</button>
+                    </td>
+                  </tr>
+
+                  <tr data-status="resolved">
+                    <td>
+                      <div style="font-weight:700; color:var(--text-heading);" data-i18n="admin.row5Visitor">Khách #VIS-9268</div>
+                      <div style="font-size:0.75rem; color:var(--text-muted);" data-i18n="admin.row5Loc">IP: 27.72.x.x · Cần Thơ</div>
+                    </td>
+                    <td><code style="font-family:var(--font-mono); font-size:0.8rem; background:#f1f5f9; padding:2px 6px; border-radius:4px;">/home</code></td>
+                    <td>
+                      <div style="font-weight:600; color:var(--text-heading);">Hỏi địa chỉ chi nhánh & chỗ gửi ô tô</div>
+                      <div style="font-size:0.72rem; color:var(--primary); font-family:var(--font-mono);">⚡ searchKnowledge(query: "địa chỉ")</div>
+                    </td>
+                    <td><span class="badge-status badge-closed">✓ Đã Hoàn Thành</span></td>
+                    <td style="color:var(--text-muted); font-size:0.8rem;">15 phút trước</td>
+                    <td style="text-align:right;">
+                      <button class="btn-action-small" type="button">Xem Chi Tiết</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Developer Quickstart Section -->
+    <section class="section" id="developer">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-badge" data-i18n="dev.badge">Dành Cho Lập Trình Viên</div>
+          <h2 class="section-title" data-i18n="dev.title">Nhúng Vào Website Chỉ Trong 5 Phút</h2>
+          <p class="section-desc" data-i18n="dev.desc">Sao chép một đoạn mã JavaScript duy nhất và dán vào trước thẻ đóng &lt;/body&gt; của trang web.</p>
+        </div>
+
+        <div class="quickstart-box">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-weight:700; font-size:1rem; color:var(--text-heading);" data-i18n="dev.boxTitle">Mã Nhúng HTML Widget</div>
+            <div style="font-size:0.8rem; color:#64748b; font-weight:600;" data-i18n="dev.boxSub">Tích hợp nhanh &lt; 5 phút</div>
+          </div>
+
+          <div class="code-container">
+            <button class="btn-copy" id="btnCopyCode" data-i18n="dev.copy">Sao Chép Mã</button>
+            <pre class="code-snippet"><code>&lt;!-- Embed EZ Chatbot Widget --&gt;
+&lt;script src="https://widget.intern2026.zodinet.tech/ez-chat-widget.js" 
+        data-site-id="ddbc694b-9205-4153-8e6e-43329101c506" 
+        defer&gt;&lt;/script&gt;</code></pre>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; margin-top:24px;">
+            <div style="background:#ffffff; border:1px solid #e2e8f0; padding:16px; border-radius:8px; box-shadow:var(--shadow-sm);">
+              <h4 style="font-size:0.9rem; font-weight:800; margin-bottom:6px; color:var(--text-heading);" data-i18n="dev.step1Title">1. Tạo Website trên Admin</h4>
+              <p style="font-size:0.82rem; color:#64748b;" data-i18n-html="dev.step1Desc">Nhận mã <code>siteId</code> định danh độc lập.</p>
+            </div>
+            <div style="background:#ffffff; border:1px solid #e2e8f0; padding:16px; border-radius:8px; box-shadow:var(--shadow-sm);">
+              <h4 style="font-size:0.9rem; font-weight:800; margin-bottom:6px; color:var(--text-heading);" data-i18n="dev.step2Title">2. Cấu hình Domain Allowlist</h4>
+              <p style="font-size:0.82rem; color:#64748b;" data-i18n="dev.step2Desc">Giới hạn tên miền được phép nhúng widget an toàn.</p>
+            </div>
+            <div style="background:#ffffff; border:1px solid #e2e8f0; padding:16px; border-radius:8px; box-shadow:var(--shadow-sm);">
+              <h4 style="font-size:0.9rem; font-weight:800; margin-bottom:6px; color:var(--text-heading);" data-i18n="dev.step3Title">3. Nạp tài liệu Knowledge Base</h4>
+              <p style="font-size:0.82rem; color:#64748b;" data-i18n="dev.step3Desc">Kích hoạt khả năng AI trả lời tự động trên dữ liệu riêng.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="section section-alt" id="pricing">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-badge" data-i18n="pricing.badge">Bảng Giá Minh Bạch</div>
+          <h2 class="section-title" data-i18n="pricing.title">Chi Phí Rõ Ràng, Phù Hợp Mọi Doanh Nghiệp</h2>
+          <p class="section-desc" data-i18n="pricing.desc">Lựa chọn gói dịch vụ tối ưu cho mô hình kinh doanh của bạn. Không phát sinh chi phí ẩn.</p>
+        </div>
+
+        <div class="pricing-grid">
+          <!-- Starter -->
+          <div class="pricing-card">
+            <div>
+              <h3 style="font-size:1.3rem; font-weight:800; color:var(--text-heading); margin-bottom:6px;" data-i18n="price.starter.name">Starter</h3>
+              <p style="color:var(--text-muted); font-size:0.88rem;" data-i18n="price.starter.desc">Dành cho website nhỏ & tra cứu thông tin cơ bản.</p>
+              <div class="pricing-price">
+                <span class="pricing-amount">$49</span>
+                <span class="pricing-period" data-i18n="pricing.period">/ tháng</span>
+              </div>
+              <ul class="pricing-features">
+                <li data-i18n="price.starter.f1">1.000 cuộc trò chuyện/tháng</li>
+                <li data-i18n="price.starter.f2">Huấn luyện AI cơ bản (PDF/TXT)</li>
+                <li data-i18n="price.starter.f3">Hỗ trợ qua Email</li>
+                <li data-i18n="price.starter.f4">Tích hợp widget vào website</li>
+              </ul>
+            </div>
+            <a class="btn-secondary" style="width:100%; text-align:center;" href="https://dashboard.intern2026.zodinet.tech/login" target="_blank" data-i18n="pricing.chooseStarter">Bắt Đầu Ngay</a>
+          </div>
+
+          <!-- Business (Popular) -->
+          <div class="pricing-card popular">
+            <span class="popular-badge" data-i18n="price.popular">Phổ Biến Nhất</span>
+            <div>
+              <h3 style="font-size:1.3rem; font-weight:800; color:var(--text-heading); margin-bottom:6px;" data-i18n="price.biz.name">Business</h3>
+              <p style="color:var(--text-muted); font-size:0.88rem;" data-i18n="price.biz.desc">Tối ưu cho Salon, Spa & dịch vụ đặt lịch chuyên nghiệp.</p>
+              <div class="pricing-price">
+                <span class="pricing-amount">$149</span>
+                <span class="pricing-period" data-i18n="pricing.period">/ tháng</span>
+              </div>
+              <ul class="pricing-features">
+                <li data-i18n="price.biz.f1">10.000 cuộc trò chuyện/tháng</li>
+                <li data-i18n-html="price.biz.f2"><strong>Đặt Lịch Salon Hội Thoại Tự Động</strong></li>
+                <li data-i18n-html="price.biz.f3"><strong>Bảng Lịch Hẹn Admin Day-View</strong></li>
+                <li data-i18n="price.biz.f4">Bộ Công Cụ Model Context Protocol (MCP)</li>
+                <li data-i18n="price.biz.f5">Hỗ trợ ưu tiên & Đa kênh</li>
+              </ul>
+            </div>
+            <a class="btn-primary" style="width:100%; text-align:center;" href="https://dashboard.intern2026.zodinet.tech/login" target="_blank" data-i18n="pricing.chooseBiz">Bắt Đầu Ngay</a>
+          </div>
+
+          <!-- Enterprise -->
+          <div class="pricing-card">
+            <div>
+              <h3 style="font-size:1.3rem; font-weight:800; color:var(--text-heading); margin-bottom:6px;" data-i18n="price.ent.name">Enterprise</h3>
+              <p style="color:var(--text-muted); font-size:0.88rem;" data-i18n="price.ent.desc">Giải pháp toàn diện & tùy chọn tự lưu trữ (Self-host).</p>
+              <div class="pricing-price">
+                <span class="pricing-amount">$499</span>
+                <span class="pricing-period" data-i18n="pricing.period">/ tháng</span>
+              </div>
+              <ul class="pricing-features">
+                <li data-i18n="price.ent.f1">Không giới hạn cuộc trò chuyện</li>
+                <li data-i18n="price.ent.f2">Huấn luyện nâng cao & Tự động quét URL</li>
+                <li data-i18n="price.ent.f3">Hỗ trợ kỹ thuật chuyên biệt 1:1</li>
+                <li data-i18n="price.ent.f4">Tích hợp toàn bộ API & Self-host</li>
+              </ul>
+            </div>
+            <a class="btn-secondary" style="width:100%; text-align:center;" href="mailto:sales@zodinet.com" data-i18n="pricing.contactSales">Bắt Đầu Ngay</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-badge" data-i18n="testi.badge">Khách Hàng Đánh Giá</div>
+          <h2 class="section-title" data-i18n="testi.title">Khách Hàng Nói Gì Về Chúng Tôi</h2>
+          <p class="section-desc" data-i18n="testi.desc">Lắng nghe chia sẻ thực tế từ các doanh nghiệp đã tối ưu hóa vận hành thành công cùng AI Chatbot.</p>
+        </div>
+
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <div class="author-info">
+              <div class="author-avatar">DS</div>
+              <div>
+                <h4 style="font-size:1rem; font-weight:700; color:var(--text-heading);">Darrell Steward</h4>
+                <p style="font-size:0.82rem; color:var(--text-muted);">Customer Success Manager</p>
+              </div>
+            </div>
+            <p style="color:#334155; font-size:0.94rem;" data-i18n="testi.quote1">"Hệ thống chatbot AI này đã giúp chúng tôi giảm 45% khối lượng ticket hỗ trợ trong khi vẫn duy trì điểm số hài lòng vượt trội."</p>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="author-info">
+              <div class="author-avatar">EP</div>
+              <div>
+                <h4 style="font-size:1rem; font-weight:700; color:var(--text-heading);">Eleanor Pena</h4>
+                <p style="font-size:0.82rem; color:var(--text-muted);">Operations Director</p>
+              </div>
+            </div>
+            <p style="color:#334155; font-size:0.94rem;" data-i18n="testi.quote2">"Tỷ lệ chốt lịch hẹn làm đẹp tăng thêm 30% kể từ khi khách hàng có thể chọn slot và xác nhận ngay trên khung chat."</p>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="author-info">
+              <div class="author-avatar">MM</div>
+              <div>
+                <h4 style="font-size:1rem; font-weight:700; color:var(--text-heading);">Marvin McKinney</h4>
+                <p style="font-size:0.82rem; color:var(--text-muted);">Salon Chain Owner</p>
+              </div>
+            </div>
+            <p style="color:#334155; font-size:0.94rem;" data-i18n="testi.quote3">"Khả năng đồng bộ trực tiếp với Admin Calendar và chống trùng lịch 2 lớp đã giải phóng hoàn toàn thời gian trực tổng đài của chúng tôi."</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA Banner -->
+    <section class="section" style="padding-top:0;">
+      <div class="container">
+        <div class="cta-banner">
+          <h2 data-i18n="cta.title">Sẵn Sàng Nâng Tầm Trải Nghiệm Khách Hàng?</h2>
+          <p data-i18n="cta.desc">Gia nhập cùng hàng ngàn doanh nghiệp đang ứng dụng AI Chatbot để cung cấp dịch vụ khách hàng xuất sắc 24/7.</p>
+          <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+            <a class="btn-primary" href="https://dashboard.intern2026.zodinet.tech/login" target="_blank" data-i18n="cta.btnStart">Bắt Đầu Dùng Thử</a>
+            <a class="btn-secondary" href="mailto:sales@zodinet.com" data-i18n="cta.btnDemo">Liên Hệ Tư Vấn</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer (Original Rich Gradient Design) -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand" style="margin-bottom:16px; color:#fff;">
+            <span class="brand-icon" style="background:#fff; color:var(--primary);">AI</span>
+            <span style="color:#fff;">AI Chatbot</span>
+          </div>
+          <p style="color:rgba(255,255,255,0.88); font-size:0.92rem; margin-bottom:20px; line-height:1.6;" data-i18n="footer.about">
+            Nền tảng AI Chatbot thông minh tự động hóa hỗ trợ, tăng tỷ lệ chuyển đổi và mang đến trải nghiệm cá nhân hóa 24/7.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4 data-i18n="footer.products">Tính năng nổi bật</h4>
+          <ul>
+            <li><a href="#features">Multi-Tenant AI</a></li>
+            <li><a href="#booking">Salon Booking Engine</a></li>
+            <li><a href="#mcp">MCP Architecture</a></li>
+            <li><a href="#admin">Admin Day Calendar</a></li>
+            <li><a href="#pricing" data-i18n="footer.linkPricing">Bảng giá dịch vụ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 data-i18n="footer.developers">Dành cho Developers</h4>
+          <ul>
+            <li><a href="#developer" data-i18n="footer.linkEmbed">Nhúng trong 5 phút</a></li>
+            <li><a href="#mcp">MCP Protocol Standard</a></li>
+            <li><a href="#features" data-i18n="footer.linkApi">Tài liệu API</a></li>
+            <li><a href="#features" data-i18n="footer.linkByok">Bảo mật BYOK Key</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 data-i18n="footer.company">Thông tin doanh nghiệp</h4>
+          <ul>
+            <li><a href="#" data-i18n="footer.linkPartners">Đối tác doanh nghiệp</a></li>
+            <li><a href="#" data-i18n="footer.linkTerms">Điều khoản sử dụng</a></li>
+            <li><a href="#" data-i18n="footer.linkPrivacy">Chính sách bảo mật</a></li>
+            <li><a href="mailto:contact@zodinet.com" data-i18n="footer.linkSupport">Liên hệ hỗ trợ</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div data-i18n="footer.copyright">© 2026 Zodinet. All rights reserved.</div>
+        <div class="footer-links">
+          <a href="#" data-i18n="footer.bottomPrivacy">Chính sách bảo mật</a>
+          <a href="#" data-i18n="footer.bottomTerms">Điều khoản</a>
+          <a href="#">Facebook</a>
+          <a href="#">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts: Interactive Logic & Bilingual Dictionary -->
+  <script>
+    const dictionary = {
+      vi: {
+        pageTitle: "AI Chatbot - Multi-Tenant AI Chatbot & MCP Booking Agent",
+        pageMetaDesc: "Nền tảng AI Chatbot Đa Doanh Nghiệp (Multi-Tenant) tích hợp Đặt Lịch Hẹn Salon & Chuẩn Model Context Protocol (MCP). Nhúng dễ dàng trong 5 phút, bảo mật dữ liệu tuyệt đối.",
+        nav: {
+          features: "Tính Năng",
+          booking: "Đặt Lịch Salon",
+          mcp: "Kiến Trúc MCP",
+          admin: "Quản Trị Admin",
+          developer: "Nhà Phát Triển",
+          pricing: "Bảng Giá",
+          login: "Sign In"
+        },
+        hero: {
+          pill: "AI Chatbot Đa Doanh Nghiệp + Đặt Lịch Hội Thoại Chuẩn MCP",
+          titlePrefix: "Intelligent Conversations with ",
+          titleHighlight: "AI Chatbot",
+          subtitle: "Nâng tầm trải nghiệm khách hàng với nền tảng AI Chatbot thông minh. Tự động hóa hỗ trợ 24/7, chốt lịch hẹn tức thì và tích hợp nhanh chóng vào mọi website.",
+          tryDemo: "Bắt Đầu Ngay",
+          embedNow: "Xem Demo",
+          showcaseTitle: "Multi-Tenant AI + MCP Booking Engine",
+          mockBot1: "Chào bạn! Tôi có thể giúp gì cho bạn hôm nay? Tôi có thể giải đáp thắc mắc hoặc hỗ trợ đặt lịch hẹn làm tóc.",
+          mockUser: "Tôi muốn đặt lịch cắt tóc nữ hôm nay với Stylist Lan",
+          mockBot2: "Tuyệt vời! Dưới đây là các khung giờ khả dụng của Stylist Lan hôm nay:",
+          mockCal1: "Cắt tóc nữ · Lan",
+          mockCal2: "Cắt tóc nam · Bình",
+          mockCal3: "Nhuộm tóc · Lan",
+          mockCalFree: "+ Trống lúc 15:30"
+        },
+        stats: {
+          embed: "Widget Embed",
+          isolation: "Data Isolation",
+          conflict: "Conflict Guard",
+          mcp: "MCP Standard HTTP",
+          valEmbed: "< 5 Phút",
+          valIsolation: "100%",
+          valConflict: "2 Lớp",
+          valMcp: "Streamable"
+        },
+        features: {
+          badge: "Kiến Trúc & Điểm Mạnh",
+          title: "Tại Sao Chọn Chúng Tôi",
+          desc: "Khám phá các giải pháp công nghệ vượt trội giúp doanh nghiệp tối ưu vận hành và nâng cao trải nghiệm khách hàng."
+        },
+        feat: {
+          1: {
+            title: "Multi-Tenancy Tuyệt Đối",
+            desc: "Mỗi website sở hữu một định danh độc lập. Cơ sở tri thức, lịch hẹn và lịch sử trò chuyện được cách ly an toàn 100%."
+          },
+          2: {
+            title: "Custom RAG & Huấn Luyện Tri Thức",
+            desc: "Huấn luyện AI bằng tài liệu riêng của doanh nghiệp. Tự động trích xuất và tạo vector embedding từ PDF, Markdown, TXT, HTML."
+          },
+          3: {
+            title: "Chuẩn Model Context Protocol",
+            desc: "Agent tự động phát hiện và gọi tool thông qua giao thức Streamable HTTP với bảo mật Tenant Context Header."
+          },
+          4: {
+            title: "Đặt Lịch Hội Thoại Tự Động",
+            desc: "Tự động nhận diện ý định đặt lịch, gợi ý khung giờ thông minh qua slot chips, tóm tắt thông tin và xác nhận trực tiếp."
+          },
+          5: {
+            title: "Bảo Vệ Chống Trùng Lịch 2 Lớp",
+            desc: "Kết hợp ràng buộc PostgreSQL GiST tại cơ sở dữ liệu và truy vấn pre-check SELECT ngăn ngừa triệt để tình trạng double-booking."
+          },
+          6: {
+            title: "Bảo Mật OpenAI Key Proxy (BYOK)",
+            desc: "Cơ chế quản lý API Key mã hóa phía máy chủ, không bao giờ để lộ key ra ngoài trình duyệt của khách hàng."
+          }
+        },
+        sim: {
+          badge: "Trải Nghiệm Thực Tế",
+          title: "Đặt Lịch Hẹn Trực Tiếp Ngay Trong Khung Chat",
+          desc: "Không cần điền form rườm rà. Chatbot tự động hướng dẫn khách chọn dịch vụ, đề xuất các slot còn trống và hoàn tất lịch hẹn trong chớp mắt.",
+          f1: {
+            title: "Khung Giờ Chọn Nhanh (Slot Chips):",
+            desc: "Các khung giờ khả dụng được hiển thị dạng chip bấm nhanh, tự động lọc theo chuyên viên yêu thích."
+          },
+          f2: {
+            title: "Thẻ Tóm Tắt Đặt Lịch (Summary Card):",
+            desc: "Khách hàng kiểm tra lại dịch vụ, thời gian, stylist và số điện thoại trước khi xác nhận."
+          },
+          f3: {
+            title: "Tự Động Xác Nhận & Cập Nhật Lịch:",
+            desc: "Cấp mã lịch hẹn, cập nhật tức thì vào Admin Calendar và gửi email thông báo."
+          },
+          resetBtn: "🔄 Bắt Đầu Lại Giả Lập",
+          status: "Online · Sẵn sàng đặt lịch"
+        },
+        mcp: {
+          badge: "Kiến Trúc Microservice",
+          title: "Giao Thức Model Context Protocol (MCP)",
+          desc: "ez-mcp-server vận hành độc lập qua Streamable HTTP với chữ ký xác thực context header đảm bảo an toàn đa người dùng.",
+          toolsTitle: "Các Công Cụ Được Đăng Ký Trong MCP Server:"
+        },
+        admin: {
+          badge: "Trung Tâm Quản Trị",
+          title: "Quản Lý Toàn Diện Trên Một Bảng Điều Khiển",
+          desc: "Theo dõi lịch hẹn theo ngày, tùy biến giao diện widget thời gian thực và giám sát các cuộc trò chuyện dễ dàng.",
+          tab1: "Lịch Hẹn Theo Ngày (Calendar Day View)",
+          tab2: "Tùy Biến Giao Diện (Live Preview)",
+          tab3: "Giám Sát Trạng Thái Hội Thoại",
+          calTitle: "Booking Calendar — 2026-07-05 (Hôm nay)",
+          calConfirmed: "4 Confirmed",
+          calCompleted: "1 Completed",
+          calColTime: "Khung Giờ",
+          calColWalkin: "Khách Vãng Lai (Walk-in)",
+          calBook1: "Trần Thị B · Cắt tóc nữ",
+          calBook2: "Nguyễn Văn A · Cắt tóc nam",
+          calBook3: "Lê Hoàng C · Nhuộm tóc",
+          calBook4: "Khách vãng lai · Tỉa tóc",
+          appTitle: "Tùy Chỉnh Màu Sắc & Tin Nhắn Chào",
+          brandColor: "Màu Chủ Đạo Thương Hiệu",
+          greetingLabel: "Lời Chào Mặc Định",
+          greetingDefault: "Chào bạn! Tôi có thể giúp gì cho bạn hôm nay?",
+          botNameLabel: "Tên Hiển Thị Bot",
+          botNameDefault: "Trợ lý AI",
+          livePreview: "Live Preview",
+          statusActive: "Active Bot Chats",
+          statusActiveDesc: "Phản hồi TB: 1.2s · 24 lượt gọi MCP Tool",
+          statusWaiting: "Waiting for Agent",
+          statusWaitingDesc: "Chờ TB: ~45s · Hàng đợi ưu tiên",
+          statusClosed: "Resolved Today",
+          statusClosedDesc: "94% Hài lòng · 6 Lịch hẹn hoàn tất",
+          feedTitle: "Danh Sách Phiên Hội Thoại Thời Gian Thực",
+          feedDesc: "Theo dõi trực tiếp hành vi khách truy cập, công cụ MCP được kích hoạt và trạng thái xử lý",
+          filterAll: "Tất cả (24)",
+          filterActive: "Đang Chat (8)",
+          filterWaiting: "Chờ Hỗ Trợ (2)",
+          filterResolved: "Đã Xong (14)",
+          row1Visitor: "Khách #VIS-9284",
+          row1Loc: "IP: 14.162.x.x · Hà Nội",
+          row1Intent: "Đặt lịch cắt tóc nữ (Slot 14:00)",
+          row2Visitor: "Khách #VIS-9281",
+          row2Loc: "IP: 115.78.x.x · TP.HCM",
+          row2Intent: "Hỏi giá nhuộm Balayage & Phục hồi",
+          row3Visitor: "Khách #VIS-9279",
+          row3Loc: "IP: 42.118.x.x · Đà Nẵng",
+          row3Intent: "Yêu cầu tư vấn gói cô dâu VIP 5 người",
+          row3Sub: 'Khách bấm "Gặp chuyên viên tư vấn"',
+          row4Visitor: "Khách #VIS-9275 (Trần Thị B)",
+          row4Sub: "0912-345-678 · Khách quen",
+          row4Intent: "Đã tạo thành công lịch hẹn #BK-2847",
+          row5Visitor: "Khách #VIS-9268",
+          row5Loc: "IP: 27.72.x.x · Cần Thơ",
+          row5Intent: "Hỏi địa chỉ chi nhánh & chỗ gửi ô tô",
+          statusChatting: "● Đang Chat với Bot",
+          statusWaitingAgent: "🟡 Chờ Nhân Viên",
+          statusDone: "✓ Đã Hoàn Thành",
+          timeJustNow: "Vừa xong",
+          time1m: "1 phút trước",
+          time2m: "2 phút trước",
+          time8m: "8 phút trước",
+          time15m: "15 phút trước",
+          actionLive: "Xem Live",
+          actionTakeover: "Tiếp Quản",
+          actionDetail: "Xem Chi Tiết"
+        },
+        table: {
+          visitor: "Khách Hàng (Visitor)",
+          page: "Trang Hiện Tại",
+          intent: "Ý Định & Thao Tác MCP",
+          status: "Trạng Thái",
+          time: "Thời Gian",
+          action: "Thao Tác"
+        },
+        dev: {
+          badge: "Dành Cho Lập Trình Viên",
+          title: "Nhúng Vào Website Chỉ Trong 5 Phút",
+          desc: "Sao chép một đoạn mã JavaScript duy nhất và dán vào trước thẻ đóng </body> của trang web.",
+          boxTitle: "Mã Nhúng HTML Widget",
+          boxSub: "Tích hợp nhanh < 5 phút",
+          copy: "Sao Chép Mã",
+          copied: "✓ Đã sao chép!",
+          step1Title: "1. Tạo Website trên Admin",
+          step1Desc: "Nhận mã <code>siteId</code> định danh độc lập.",
+          step2Title: "2. Cấu hình Domain Allowlist",
+          step2Desc: "Giới hạn tên miền được phép nhúng widget an toàn.",
+          step3Title: "3. Nạp tài liệu Knowledge Base",
+          step3Desc: "Kích hoạt khả năng AI trả lời tự động trên dữ liệu riêng."
+        },
+        pricing: {
+          badge: "Bảng Giá Minh Bạch",
+          title: "Chi Phí Rõ Ràng, Phù Hợp Mọi Doanh Nghiệp",
+          desc: "Lựa chọn gói dịch vụ tối ưu cho mô hình kinh doanh của bạn. Không phát sinh chi phí ẩn.",
+          period: "/ tháng",
+          chooseStarter: "Bắt Đầu Ngay",
+          chooseBiz: "Bắt Đầu Ngay",
+          contactSales: "Liên Hệ Tư Vấn"
+        },
+        price: {
+          popular: "Phổ Biến Nhất",
+          starter: {
+            name: "Starter",
+            desc: "Dành cho website nhỏ & tra cứu thông tin cơ bản.",
+            f1: "1.000 cuộc trò chuyện/tháng",
+            f2: "Huấn luyện AI cơ bản (PDF/TXT)",
+            f3: "Hỗ trợ qua Email",
+            f4: "Tích hợp widget vào website"
+          },
+          biz: {
+            name: "Business",
+            desc: "Tối ưu cho Salon, Spa & dịch vụ đặt lịch chuyên nghiệp.",
+            f1: "10.000 cuộc trò chuyện/tháng",
+            f2: "<strong>Đặt Lịch Salon Hội Thoại Tự Động</strong>",
+            f3: "<strong>Bảng Lịch Hẹn Admin Day-View</strong>",
+            f4: "Bộ Công Cụ Model Context Protocol (MCP)",
+            f5: "Hỗ trợ ưu tiên & Đa kênh"
+          },
+          ent: {
+            name: "Enterprise",
+            desc: "Giải pháp toàn diện & tùy chọn tự lưu trữ (Self-host).",
+            f1: "Không giới hạn cuộc trò chuyện",
+            f2: "Huấn luyện nâng cao & Tự động quét URL",
+            f3: "Hỗ trợ kỹ thuật chuyên biệt 1:1",
+            f4: "Tích hợp toàn bộ API & Self-host"
+          }
+        },
+        testi: {
+          badge: "Khách Hàng Đánh Giá",
+          title: "Khách Hàng Nói Gì Về Chúng Tôi",
+          desc: "Lắng nghe chia sẻ thực tế từ các doanh nghiệp đã tối ưu hóa vận hành thành công cùng AI Chatbot.",
+          quote1: '"Hệ thống chatbot AI này đã giúp chúng tôi giảm 45% khối lượng ticket hỗ trợ trong khi vẫn duy trì điểm số hài lòng vượt trội."',
+          quote2: '"Tỷ lệ chốt lịch hẹn làm đẹp tăng thêm 30% kể từ khi khách hàng có thể chọn slot và xác nhận ngay trên khung chat."',
+          quote3: '"Khả năng đồng bộ trực tiếp với Admin Calendar và chống trùng lịch 2 lớp đã giải phóng hoàn toàn thời gian trực tổng đài của chúng tôi."'
+        },
+        cta: {
+          title: "Sẵn Sàng Nâng Tầm Trải Nghiệm Khách Hàng?",
+          desc: "Gia nhập cùng hàng ngàn doanh nghiệp đang ứng dụng AI Chatbot để cung cấp dịch vụ khách hàng xuất sắc 24/7.",
+          btnStart: "Bắt Đầu Dùng Thử",
+          btnDemo: "Liên Hệ Tư Vấn"
+        },
+        footer: {
+          about: "Nền tảng AI Chatbot thông minh tự động hóa hỗ trợ, tăng tỷ lệ chuyển đổi và mang đến trải nghiệm cá nhân hóa 24/7.",
+          products: "Tính năng nổi bật",
+          developers: "Dành cho Developers",
+          company: "Thông tin doanh nghiệp",
+          linkPricing: "Bảng giá dịch vụ",
+          linkEmbed: "Nhúng trong 5 phút",
+          linkApi: "Tài liệu API",
+          linkByok: "Bảo mật BYOK Key",
+          linkPartners: "Đối tác doanh nghiệp",
+          linkTerms: "Điều khoản sử dụng",
+          linkPrivacy: "Chính sách bảo mật",
+          linkSupport: "Liên hệ hỗ trợ",
+          bottomPrivacy: "Chính sách bảo mật",
+          bottomTerms: "Điều khoản",
+          copyright: "© 2026 Zodinet. All rights reserved."
+        }
+      },
+      en: {
+        pageTitle: "AI Chatbot - Multi-Tenant AI Chatbot & MCP Booking Agent",
+        pageMetaDesc: "Multi-Tenant AI Chatbot platform with integrated Salon Booking & Model Context Protocol (MCP) standard. Easy 5-minute embed, complete data isolation.",
+        nav: {
+          features: "Features",
+          booking: "Salon Booking",
+          mcp: "MCP Architecture",
+          admin: "Admin Dashboard",
+          developer: "Developers",
+          pricing: "Pricing",
+          login: "Sign In"
+        },
+        hero: {
+          pill: "Multi-Tenant AI Chatbot + MCP Conversational Booking",
+          titlePrefix: "Intelligent Conversations with ",
+          titleHighlight: "AI Chatbot",
+          subtitle: "Enhance customer engagement with our powerful AI chatbot. Automate support, boost conversions, and deliver personalized experiences 24/7.",
+          tryDemo: "Get started",
+          embedNow: "Watch Demo",
+          showcaseTitle: "Multi-Tenant AI + MCP Booking Engine",
+          mockBot1: "Hello! How can I help you today? I can answer questions or assist with hair salon booking.",
+          mockUser: "I'd like to book a Women's Haircut today with Stylist Lan",
+          mockBot2: "Great! Here are available time slots for Stylist Lan today:",
+          mockCal1: "Women's Haircut · Lan",
+          mockCal2: "Men's Haircut · Binh",
+          mockCal3: "Hair Color · Lan",
+          mockCalFree: "+ Open at 15:30"
+        },
+        stats: {
+          embed: "Widget Embed",
+          isolation: "Data Isolation",
+          conflict: "Conflict Guard",
+          mcp: "MCP Standard HTTP",
+          valEmbed: "< 5 Mins",
+          valIsolation: "100%",
+          valConflict: "2-Layer",
+          valMcp: "Streamable"
+        },
+        features: {
+          badge: "Architecture & Strengths",
+          title: "Why Choose Us",
+          desc: "Discover the features that make our platform stand out from the competition."
+        },
+        feat: {
+          1: {
+            title: "Strict Multi-Tenancy",
+            desc: "Each website is scoped by a unique site identifier. Knowledge base, bookings, and conversations are strictly isolated."
+          },
+          2: {
+            title: "Custom RAG & Training",
+            desc: "Train with your data for industry-specific responses. Upload PDF, Markdown, TXT, HTML with automatic vector embedding."
+          },
+          3: {
+            title: "Model Context Protocol",
+            desc: "Agent discovers and calls tools through standardized Streamable HTTP protocol with tenant isolation context."
+          },
+          4: {
+            title: "Conversational Booking",
+            desc: "Automatic intent detection, slot picker chips, summary confirmation cards, and automated email confirmation."
+          },
+          5: {
+            title: "2-Layer Conflict Guard",
+            desc: "PostgreSQL exclusion constraint at DB layer paired with friendly pre-check queries prevents double booking."
+          },
+          6: {
+            title: "Secure OpenAI Key Proxy",
+            desc: "Server-side BYOK key management ensures your API keys are never exposed to the client-side browser widget."
+          }
+        },
+        sim: {
+          badge: "Interactive Experience",
+          title: "Book Appointments Directly in Chat Window",
+          desc: "No tedious forms. The chatbot guides visitors through service selection, available slot chips, and confirmation cards with instant booking codes.",
+          f1: {
+            title: "Inline Slot Picker Chips:",
+            desc: "Available time slots are rendered as tappable chips, filtered by staff preference."
+          },
+          f2: {
+            title: "Summary Card Gate:",
+            desc: "Visitors review service, datetime, stylist, and phone details before committing the booking."
+          },
+          f3: {
+            title: "Auto-Confirm & Sync:",
+            desc: "Generates booking code, updates admin calendar, and triggers email confirmation."
+          },
+          resetBtn: "🔄 Reset Simulator",
+          status: "Online · Ready to book"
+        },
+        mcp: {
+          badge: "Clean Service Boundary",
+          title: "Model Context Protocol (MCP) Standard",
+          desc: "ez-mcp-server runs as a standalone service via Streamable HTTP with HMAC-signed context headers for tenant isolation.",
+          toolsTitle: "Standard Tools Registered in MCP Server:"
+        },
+        admin: {
+          badge: "Command Center",
+          title: "Manage Everything from a Single Dashboard",
+          desc: "Day-view booking calendar, live widget appearance customizer, and conversational status monitoring for non-technical admins.",
+          tab1: "Booking Calendar (Day View)",
+          tab2: "Appearance & Live Preview",
+          tab3: "Conversation Status Monitor",
+          calTitle: "Booking Calendar — 2026-07-05 (Today)",
+          calConfirmed: "4 Confirmed",
+          calCompleted: "1 Completed",
+          calColTime: "Time Slot",
+          calColWalkin: "Walk-in Guests",
+          calBook1: "Tran Thi B · Women's Haircut",
+          calBook2: "Nguyen Van A · Men's Haircut",
+          calBook3: "Le Hoang C · Hair Color",
+          calBook4: "Walk-in guest · Hair Trim",
+          appTitle: "Customize Branding & Greeting",
+          brandColor: "Primary Brand Color",
+          greetingLabel: "Default Greeting Message",
+          greetingDefault: "Hello! How can I help you today?",
+          botNameLabel: "Bot Display Name",
+          botNameDefault: "AI Assistant",
+          livePreview: "Live Preview",
+          statusActive: "Active Bot Chats",
+          statusActiveDesc: "Avg Response: 1.2s · 24 MCP Tool calls",
+          statusWaiting: "Waiting for Agent",
+          statusWaitingDesc: "Avg Wait: ~45s · Priority Queued",
+          statusClosed: "Resolved Today",
+          statusClosedDesc: "94% Satisfaction · 6 Bookings Completed",
+          feedTitle: "Real-Time Conversation Live Feed",
+          feedDesc: "Monitor live visitor actions, triggered MCP tools, and handling statuses",
+          filterAll: "All (24)",
+          filterActive: "Active (8)",
+          filterWaiting: "Waiting (2)",
+          filterResolved: "Resolved (14)",
+          row1Visitor: "Visitor #VIS-9284",
+          row1Loc: "IP: 14.162.x.x · Hanoi",
+          row1Intent: "Book Women's Haircut (Slot 14:00)",
+          row2Visitor: "Visitor #VIS-9281",
+          row2Loc: "IP: 115.78.x.x · HCMC",
+          row2Intent: "Inquire Balayage & Hair Care price",
+          row3Visitor: "Visitor #VIS-9279",
+          row3Loc: "IP: 42.118.x.x · Da Nang",
+          row3Intent: "VIP Bridal package inquiry (5 people)",
+          row3Sub: 'User clicked "Talk to Specialist"',
+          row4Visitor: "Visitor #VIS-9275 (Tran Thi B)",
+          row4Sub: "0912-345-678 · Regular",
+          row4Intent: "Successfully created booking #BK-2847",
+          row5Visitor: "Visitor #VIS-9268",
+          row5Loc: "IP: 27.72.x.x · Can Tho",
+          row5Intent: "Ask for branch address & parking spot",
+          statusChatting: "● Chatting with Bot",
+          statusWaitingAgent: "🟡 Waiting for Agent",
+          statusDone: "✓ Resolved",
+          timeJustNow: "Just now",
+          time1m: "1 min ago",
+          time2m: "2 mins ago",
+          time8m: "8 mins ago",
+          time15m: "15 mins ago",
+          actionLive: "View Live",
+          actionTakeover: "Take Over",
+          actionDetail: "View Details"
+        },
+        table: {
+          visitor: "Visitor",
+          page: "Current Page",
+          intent: "Intent & MCP Action",
+          status: "Status",
+          time: "Time",
+          action: "Action"
+        },
+        dev: {
+          badge: "Developer Experience",
+          title: "Embed in Your Site in Under 5 Minutes",
+          desc: "Copy a single JavaScript tag and paste it before the closing body tag of your website.",
+          boxTitle: "HTML Widget Embed Code",
+          boxSub: "Quick integration < 5 mins",
+          copy: "Copy Code",
+          copied: "✓ Copied!",
+          step1Title: "1. Create Website in Admin",
+          step1Desc: "Obtain unique isolated <code>siteId</code>.",
+          step2Title: "2. Configure Domain Allowlist",
+          step2Desc: "Restrict allowed domains for secure widget embedding.",
+          step3Title: "3. Upload Knowledge Base Docs",
+          step3Desc: "Enable automated AI answers on custom business data."
+        },
+        pricing: {
+          badge: "Transparent Pricing",
+          title: "Simple, Transparent Pricing",
+          desc: "Choose the perfect plan for your needs. No hidden fees.",
+          period: "/ month",
+          chooseStarter: "Get started",
+          chooseBiz: "Get started",
+          contactSales: "Contact Sales"
+        },
+        price: {
+          popular: "Most Popular",
+          starter: {
+            name: "Starter",
+            desc: "Basic AI chatbot for small websites.",
+            f1: "1,000 conversations/month",
+            f2: "Basic AI training (PDF/TXT)",
+            f3: "Email Support",
+            f4: "Website widget embed"
+          },
+          biz: {
+            name: "Business",
+            desc: "Custom AI training & Conversational Booking.",
+            f1: "10,000 conversations/month",
+            f2: "<strong>Conversational Salon Booking Engine</strong>",
+            f3: "<strong>Admin Day-View Booking Calendar</strong>",
+            f4: "Model Context Protocol (MCP) Tooling",
+            f5: "Priority & Multi-channel Support"
+          },
+          ent: {
+            name: "Enterprise",
+            desc: "Full control & self-hosted option.",
+            f1: "Unlimited conversations",
+            f2: "Advanced training & Auto URL Crawler",
+            f3: "Dedicated 1:1 Technical Support",
+            f4: "Full API Access & Self-host Option"
+          }
+        },
+        testi: {
+          badge: "Testimonials",
+          title: "What Our Clients Say",
+          desc: "Don't just take our word for it. Here's what our clients have to say.",
+          quote1: '"This AI chatbot platform helped us reduce support tickets by 45% while maintaining outstanding customer satisfaction scores."',
+          quote2: '"Salon appointment conversions increased by 30% since clients can select available slots and confirm right inside the chat window."',
+          quote3: '"The real-time sync with Admin Day Calendar and 2-layer conflict guard completely eliminated double-booking headaches for our front desk."'
+        },
+        cta: {
+          title: "Ready to Transform Your Customer Experience?",
+          desc: "Join thousands of businesses using our AI chatbot to deliver exceptional customer service around the clock.",
+          btnStart: "Start Free Trial",
+          btnDemo: "Contact Sales"
+        },
+        footer: {
+          about: "Enhance customer engagement with an AI chatbot. Automate support, boost conversions, and deliver personalized experiences 24/7.",
+          products: "Product Features",
+          developers: "Developers",
+          company: "Company",
+          linkPricing: "Pricing Plans",
+          linkEmbed: "5-Minute Embed",
+          linkApi: "API Documentation",
+          linkByok: "BYOK Key Security",
+          linkPartners: "Enterprise Partners",
+          linkTerms: "Terms of Service",
+          linkPrivacy: "Privacy Policy",
+          linkSupport: "Contact Support",
+          bottomPrivacy: "Privacy Policy",
+          bottomTerms: "Terms",
+          copyright: "© 2026 Zodinet. All rights reserved."
+        }
+      }
+    };
+
+    let currentLang = localStorage.getItem("lang") || "vi";
+
+    function getNested(obj, path) {
+      return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    }
+
+    function applyTranslations() {
+      const t = dictionary[currentLang] || dictionary.vi;
+      document.documentElement.lang = currentLang;
+
+      // Update Page Meta & Title
+      if (t.pageTitle) document.title = t.pageTitle;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc && t.pageMetaDesc) metaDesc.setAttribute("content", t.pageMetaDesc);
+
+      // Text elements
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        const val = getNested(t, key);
+        if (val !== undefined && val !== null) el.textContent = val;
+      });
+
+      // HTML elements (e.g. with strong/code tags)
+      document.querySelectorAll("[data-i18n-html]").forEach(el => {
+        const key = el.getAttribute("data-i18n-html");
+        const val = getNested(t, key);
+        if (val !== undefined && val !== null) el.innerHTML = val;
+      });
+
+      // Sync Admin Customizer Mock defaults on switch
+      const inputGreeting = document.getElementById("inputGreeting");
+      const inputBotName = document.getElementById("inputBotName");
+      const previewGreeting = document.getElementById("previewGreeting");
+      const previewBotName = document.getElementById("previewBotName");
+
+      if (inputGreeting && previewGreeting && t.admin) {
+        inputGreeting.value = t.admin.greetingDefault;
+        previewGreeting.textContent = t.admin.greetingDefault;
+      }
+      if (inputBotName && previewBotName && t.admin) {
+        inputBotName.value = t.admin.botNameDefault;
+        previewBotName.textContent = t.admin.botNameDefault;
+      }
+
+      // Sync Language switcher button state
+      document.querySelectorAll("[data-lang]").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-lang") === currentLang);
+      });
+    }
+
+    // Language Switcher Event
+    document.querySelectorAll("[data-lang]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentLang = btn.getAttribute("data-lang");
+        localStorage.setItem("lang", currentLang);
+        applyTranslations();
+        initSimulator();
+      });
+    });
+
+    // Copy Code Button
+    const btnCopy = document.getElementById("btnCopyCode");
+    if (btnCopy) {
+      btnCopy.addEventListener("click", () => {
+        const code = `<script src="https://widget.intern2026.zodinet.tech/ez-chat-widget.js" data-site-id="ddbc694b-9205-4153-8e6e-43329101c506" defer><\/script>`;
+        navigator.clipboard.writeText(code).then(() => {
+          const origText = btnCopy.textContent;
+          const t = dictionary[currentLang] || dictionary.vi;
+          btnCopy.textContent = (t.dev && t.dev.copied) ? t.dev.copied : (currentLang === 'vi' ? "✓ Đã sao chép!" : "✓ Copied!");
+          btnCopy.style.background = "#10b981";
+          setTimeout(() => {
+            btnCopy.textContent = origText;
+            btnCopy.style.background = "";
+          }, 2000);
+        });
+      });
+    }
+
+    // Admin Tabs Switcher
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+
+        btn.classList.add("active");
+        const targetId = btn.getAttribute("data-tab");
+        const targetContent = document.getElementById(targetId);
+        if (targetContent) targetContent.classList.add("active");
+      });
+    });
+
+    // Live Appearance Customizer Mock
+    const inputGreeting = document.getElementById("inputGreeting");
+    const inputBotName = document.getElementById("inputBotName");
+    const previewGreeting = document.getElementById("previewGreeting");
+    const previewBotName = document.getElementById("previewBotName");
+    const previewHeader = document.getElementById("previewHeader");
+
+    if (inputGreeting && previewGreeting) {
+      inputGreeting.addEventListener("input", (e) => {
+        previewGreeting.textContent = e.target.value || (currentLang === 'vi' ? "Chào bạn!" : "Hello!");
+      });
+    }
+
+    if (inputBotName && previewBotName) {
+      inputBotName.addEventListener("input", (e) => {
+        previewBotName.textContent = e.target.value || (currentLang === 'vi' ? "Trợ lý AI" : "AI Assistant");
+      });
+    }
+
+    document.querySelectorAll(".color-swatch").forEach(swatch => {
+      swatch.addEventListener("click", () => {
+        document.querySelectorAll(".color-swatch").forEach(s => s.classList.remove("active"));
+        swatch.classList.add("active");
+        const color = swatch.getAttribute("data-color");
+        if (previewHeader) previewHeader.style.background = color;
+      });
+    });
+
+    // Conversation Feed Filter Pills
+    document.querySelectorAll(".filter-pill").forEach(pill => {
+      pill.addEventListener("click", () => {
+        document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        const filter = pill.getAttribute("data-filter");
+        const rows = document.querySelectorAll("#conversationTableBody tr");
+
+        rows.forEach(row => {
+          if (filter === "all") {
+            row.style.display = "";
+          } else {
+            row.style.display = row.getAttribute("data-status") === filter ? "" : "none";
+          }
+        });
+      });
+    });
+
+    /* =======================================================
+       INTERACTIVE BOOKING SIMULATOR LOGIC
+       ======================================================= */
+    const simContainer = document.getElementById("simMessages");
+    let bookingState = {
+      service: null,
+      stylist: "Stylist Lan",
+      date: "05/07/2026",
+      slot: null,
+      customerName: "Trần Thị B",
+      phone: "0912-345-678"
+    };
+
+    function initSimulator() {
+      if (!simContainer) return;
+      simContainer.innerHTML = "";
+      bookingState.service = null;
+      bookingState.slot = null;
+
+      const isVi = currentLang === 'vi';
+      bookingState.customerName = isVi ? "Trần Thị B" : "Tran Thi B";
+      bookingState.stylist = "Stylist Lan";
+
+      // Step 1: Initial Bot Greeting
+      appendBotMsg(isVi 
+        ? "Chào bạn! Tôi là trợ lý AI của Salon Beauty. Bạn có muốn đặt lịch hẹn làm tóc hôm nay không?"
+        : "Hello! I'm Salon Beauty's AI assistant. Would you like to book a salon appointment today?");
+
+      // Step 2: Visitor request intent
+      setTimeout(() => {
+        appendUserMsg(isVi ? "Tôi muốn đặt lịch cắt tóc nữ hôm nay với Stylist Lan" : "I'd like to book a Women's Haircut today with Stylist Lan");
+        
+        setTimeout(() => {
+          bookingState.service = isVi ? "Cắt tóc nữ" : "Women's Haircut";
+          appendBotMsg(isVi 
+            ? "Tuyệt vời! Dưới đây là các khung giờ còn trống của Stylist Lan hôm nay:"
+            : "Great! Here are available time slots for Stylist Lan today:");
+          
+          renderSlotChips();
+        }, 600);
+      }, 700);
+    }
+
+    function appendBotMsg(text) {
+      const msg = document.createElement("div");
+      msg.className = "msg msg-bot";
+      msg.innerHTML = text;
+      simContainer.appendChild(msg);
+      simContainer.scrollTop = simContainer.scrollHeight;
+      return msg;
+    }
+
+    function appendUserMsg(text) {
+      const msg = document.createElement("div");
+      msg.className = "msg msg-user";
+      msg.textContent = text;
+      simContainer.appendChild(msg);
+      simContainer.scrollTop = simContainer.scrollHeight;
+    }
+
+    function renderSlotChips() {
+      const isVi = currentLang === 'vi';
+      const wrapper = document.createElement("div");
+      wrapper.className = "slot-chips-container";
+
+      const slots = ["09:00", "10:30", "14:00", "15:30", "17:00"];
+      slots.forEach(time => {
+        const chip = document.createElement("button");
+        chip.className = "slot-chip";
+        chip.textContent = `${time} · Lan`;
+        chip.addEventListener("click", () => {
+          bookingState.slot = time;
+          wrapper.querySelectorAll(".slot-chip").forEach(c => c.classList.remove("selected"));
+          chip.classList.add("selected");
+          
+          appendUserMsg(isVi ? `Chọn khung giờ ${time} · Lan` : `Selected slot ${time} · Lan`);
+          setTimeout(() => {
+            renderSummaryCard();
+          }, 400);
+        });
+        wrapper.appendChild(chip);
+      });
+
+      simContainer.appendChild(wrapper);
+      simContainer.scrollTop = simContainer.scrollHeight;
+    }
+
+    function renderSummaryCard() {
+      const isVi = currentLang === 'vi';
+      const card = document.createElement("div");
+      card.className = "summary-card";
+
+      card.innerHTML = `
+        <div class="summary-title">📋 ${isVi ? "Tóm Tắt Thông Tin Đặt Lịch" : "Booking Summary"}</div>
+        <div class="summary-details">
+          <div><strong>${isVi ? "Dịch vụ" : "Service"}:</strong> ${bookingState.service}</div>
+          <div><strong>${isVi ? "Thời gian" : "Time"}:</strong> ${bookingState.date} · ${bookingState.slot}</div>
+          <div><strong>${isVi ? "Nhân viên" : "Staff"}:</strong> ${bookingState.stylist}</div>
+          <div><strong>${isVi ? "Khách hàng" : "Customer"}:</strong> ${bookingState.customerName} (${bookingState.phone})</div>
+        </div>
+        <div class="summary-actions">
+          <button class="btn-confirm" id="btnConfirmBooking">${isVi ? "✓ Xác Nhận Đặt Lịch" : "✓ Confirm Booking"}</button>
+          <button class="btn-cancel" id="btnEditBooking">${isVi ? "Sửa" : "Edit"}</button>
+        </div>
+      `;
+
+      simContainer.appendChild(card);
+      simContainer.scrollTop = simContainer.scrollHeight;
+
+      card.querySelector("#btnConfirmBooking").addEventListener("click", () => {
+        card.querySelector(".summary-actions").innerHTML = `<span style="font-size:0.8rem; color:#059669; font-weight:700;">⚡ ${isVi ? "Đang xử lý đặt lịch..." : "Processing booking..."}</span>`;
+        setTimeout(() => {
+          renderConfirmationCard();
+        }, 700);
+      });
+
+      card.querySelector("#btnEditBooking").addEventListener("click", () => {
+        initSimulator();
+      });
+    }
+
+    function renderConfirmationCard() {
+      const isVi = currentLang === 'vi';
+      const card = document.createElement("div");
+      card.className = "confirmed-card";
+
+      card.innerHTML = `
+        <div class="confirmed-header">
+          <span>🎉</span>
+          <span>${isVi ? "Đặt Lịch Thành Công!" : "Booking Confirmed!"}</span>
+        </div>
+        <div style="font-size:0.85rem; color:#065f46;">
+          ${isVi ? "Mã số lịch hẹn của bạn:" : "Your booking confirmation code:"}
+        </div>
+        <div class="confirmed-code">#BK-2847</div>
+        <div style="font-size:0.8rem; color:#047857; margin-top:4px;">
+          ${bookingState.service} · ${bookingState.date} @ ${bookingState.slot} · ${bookingState.stylist}
+        </div>
+        <div style="font-size:0.75rem; color:#059669; font-weight:700; margin-top:8px;">
+          ✓ ${isVi ? "Đã lưu vào hệ thống & cập nhật Admin Calendar" : "Saved to system & synced to Admin Calendar"}
+        </div>
+      `;
+
+      simContainer.appendChild(card);
+      simContainer.scrollTop = simContainer.scrollHeight;
+    }
+
+    const btnResetSim = document.getElementById("btnResetSim");
+    if (btnResetSim) {
+      btnResetSim.addEventListener("click", initSimulator);
+    }
+
+    applyTranslations();
+    initSimulator();
+  </script>
+
+  <!-- Live Embeddable Chat Widget Script -->
+  <script src="https://widget.intern2026.zodinet.tech/ez-chat-widget.js"
+    data-site-id="ddbc694b-9205-4153-8e6e-43329101c506" defer></script>
+</body>
+
+</html>
