@@ -8,142 +8,143 @@
 [![LangGraph](https://img.shields.io/badge/AI-LangGraph%20%2F%20LangChain-1C3C3C)](./backend)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL%20%2B%20pgvector-336791?logo=postgresql)](./backend)
 
-**EZ-Chatbot** là nền tảng Chatbot AI đa người dùng (Multi-tenant) hoàn chỉnh dành cho doanh nghiệp, tích hợp hỗ trợ khách hàng thông minh, tư vấn tri thức chuyên sâu (RAG), đặt lịch hẹn trực tiếp trong luồng chat (Conversational Booking) và hỗ trợ giao thức **Model Context Protocol (MCP)** tiêu chuẩn.
+**EZ-Chatbot** is an enterprise-grade, multi-tenant AI conversational platform designed to deliver intelligent customer support, deep knowledge retrieval (RAG), conversational appointment booking, and seamless agent handoff—powered by **LangGraph** and standardized with the **Model Context Protocol (MCP)**.
 
 ---
 
-## 🏛️ Kiến Trúc Tổng Thể (System Architecture)
+## 🏛️ System Architecture
 
-Hệ thống được thiết kế theo kiến trúc hướng dịch vụ (Service-Oriented Architecture), bao gồm 5 thành phần chính hoạt động phối hợp:
+The platform follows a Service-Oriented Architecture (SOA) structured into 5 cohesive components:
 
 ```mermaid
 graph TD
     subgraph Client Layer
-        Visitor[Khách truy cập / Khách hàng] -->|Tương tác| Widget[💬 widget: Chat Widget Embed]
-        Admin[Quản trị viên / Agent] -->|Quản trị & Trực chat| Frontend[🖥️ frontend: Admin Dashboard Next.js]
-        PublicUser[Người dùng vãng lai] -->|Tìm hiểu dịch vụ| Landing[🌐 landing: Landing Page & Live Demo]
+        Visitor[Customer / Visitor] -->|Interacts with| Widget[💬 widget: Embeddable Chat Widget]
+        Admin[Administrator / Agent] -->|Configures & Chats| Frontend[🖥️ frontend: Next.js Admin Dashboard]
+        PublicUser[Public Visitors] -->|Explores Product| Landing[🌐 landing: SaaS Landing Page & Demo]
     end
 
     subgraph Core API & Services
         Widget -->|REST / SSE / WebSockets| Backend[⚙️ backend: NestJS Core API]
         Frontend -->|REST API / Auth.js / WS| Backend
-        Landing -.->|Nhúng script| Widget
+        Landing -.->|Embeds Script| Widget
 
-        Backend -->|Lưu trữ dữ liệu & Vector RAG| DB[(🐘 PostgreSQL + pgvector)]
-        Backend -->|Queue, Cache & PubSub| Redis[(⚡ Redis)]
-        Backend -->|Lưu trữ tài liệu KB| Cloudinary[☁️ Cloudinary Storage]
+        Backend -->|Persists Data & Vector Embeddings| DB[(🐘 PostgreSQL + pgvector)]
+        Backend -->|Task Queues, PubSub & Cache| Redis[(⚡ Redis)]
+        Backend -->|Document Storage| Cloudinary[☁️ Cloudinary Storage]
     end
 
     subgraph AI & Tool Integration
         Backend -->|StateGraph Workflow| LangGraph[🧠 LangGraph Orchestrator]
         LangGraph -->|LLM Inference / BYOK| LLM[🤖 AI Models: DeepSeek / OpenAI / Qwen]
         LangGraph -->|Streamable HTTP / stdio| MCP[🔌 mcp: ez-mcp-server]
-        MCP -->|Xác thực Context / Query| Backend
+        MCP -->|Context Validation / Data Query| Backend
     end
 
     subgraph Data Ingestion
         Backend -->|BullMQ Worker| Crawler[🕷️ Puppeteer Web Crawler]
-        Crawler -->|Crawl & Render| ExternalWeb[🌍 Website Khách Hàng]
+        Crawler -->|Crawls & Renders| ExternalWeb[🌍 Customer Websites]
     end
 ```
 
 ---
 
-## 📦 Danh Mục 5 Thư Mục & Vai Trò (Repository Components)
+## 📦 Repository Structure & Services
 
-Hệ thống được tổ chức thành 5 thư mục cốt lõi trong monorepo:
+The monorepo contains 5 dedicated service folders:
 
 ```text
 EZ-Chatbot/
-├── backend/      # Core API Backend (NestJS, LangGraph, TypeORM, PostgreSQL, WebSockets)
-├── frontend/     # Bảng điều khiển quản trị viên & Agent (Next.js 15, Auth.js, Tailwind, Radix)
-├── widget/       # Chat widget nhúng website khách hàng (React 19, Vite, Zustand, Shadow DOM)
-├── landing/      # Trang giới thiệu sản phẩm & demo trực quan (HTML5, Modern CSS, Vanilla JS)
-└── mcp/          # Máy chủ Model Context Protocol (Streamable HTTP / stdio, Standard Tools)
+├── backend/      # Core REST & WebSocket API, LangGraph Orchestration, RAG, TypeORM
+├── frontend/     # Multi-tenant Admin & Agent Dashboard (Next.js 15, Auth.js, Tailwind, Radix)
+├── widget/       # Embeddable Chat & Booking Widget (React 19, Vite, Zustand, Shadow DOM)
+├── landing/      # High-converting SaaS Marketing Website with Live Interactive Demo
+└── mcp/          # Standalone Model Context Protocol Server (Streamable HTTP / stdio)
 ```
 
 ---
 
 ### 1. `backend/` — Core API & AI Orchestration Service
-* **Công nghệ:** NestJS 11, TypeScript, TypeORM, PostgreSQL (hỗ trợ `pgvector`), Redis & BullMQ, LangGraph / LangChain, Socket.IO, Passport JWT.
-* **Tính năng chính:**
-  * **Xác thực & Phân quyền:** JWT Access/Refresh tokens, cơ chế kích hoạt tài khoản qua email, xác thực 2 bước (2FA TOTP), phân quyền Role-Based Access Control (`SUPER_ADMIN`, `ADMIN`, `AGENT`).
-  * **Đa người dùng (Multi-Tenancy):** Cô lập dữ liệu triệt để theo Tổ chức (Organization) và Trang web/Bot (Site).
-  * **LangGraph AI Engine:** Điều phối luồng hội thoại dựa trên trạng thái (StateGraph), phân loại ý định (Intent Classification), phát hiện cảm xúc (Sentiment Detection), tóm tắt bộ nhớ ngữ cảnh và hỗ trợ đa ngôn ngữ (VI, EN, JA).
-  * **RAG (Retrieval-Augmented Generation):** Xử lý tài liệu (PDF, TXT, DOCX), phân mảnh văn bản (Text Chunking), tính toán vector embedding và truy vấn độ tương đồng cosine qua `pgvector`.
-  * **Automated Web Crawler:** Thu thập nội dung tự động qua headless browser (Puppeteer) an toàn với cơ chế phòng vệ chống SSRF (DNS resolution & private IP blocking).
-  * **Conversational Booking Engine:** Quản lý dịch vụ, nhân sự/tài nguyên, khung giờ làm việc, tự động khóa chỗ tạm thời (Slot Hold), xác nhận và hủy lịch hẹn qua mã đặt lịch.
-  * **Live-Chat & Human Handoff:** Socket.IO Gateway hỗ trợ Agent tiếp quản cuộc trò chuyện (Take Chat), thông báo tin nhắn thời gian thực, typing indicator và cập nhật trạng thái đọc.
-  * **BYOK (Bring Your Own Key):** Cho phép doanh nghiệp tự cấu hình API key OpenAI/DeepSeek riêng, được mã hóa đối xứng AES-256-GCM an toàn trong database.
+* **Tech Stack:** NestJS 11, TypeScript, TypeORM, PostgreSQL (`pgvector`), Redis & BullMQ, LangGraph / LangChain, Socket.IO, Passport JWT.
+* **Core Capabilities:**
+  * **Authentication & Authorization:** JWT Access/Refresh tokens, email account activation, TOTP-based Two-Factor Authentication (2FA), and Role-Based Access Control (`SUPER_ADMIN`, `ADMIN`, `AGENT`).
+  * **Strict Multi-Tenancy:** Organizational scoping and site-level isolation applied across all database operations, queues, and WebSocket rooms.
+  * **LangGraph AI Orchestration:** StateGraph conversational workflow managing intent classification, sentiment analysis, memory summarization, out-of-scope filtering, and multilingual support (EN, VI, JA).
+  * **RAG (Retrieval-Augmented Generation):** Automated document ingestion (PDF, TXT, DOCX), semantic chunking, embedding generation, and cosine similarity vector search via `pgvector`.
+  * **Hardened Web Crawler:** Headless browser automation (Puppeteer) with built-in SSRF defense (DNS resolution checks and private network blocking via `ipaddr.js`).
+  * **Conversational Booking Engine:** Slot calculation, service & resource allocation, conflict prevention, atomic hold slots, confirmation, and self-service cancellation.
+  * **Live Agent Handoff & Real-time Chat:** Socket.IO gateway facilitating agent takeover ("Take Chat"), real-time message broadcasting, typing indicators, and delivery receipts.
+  * **Bring Your Own Key (BYOK):** Tenants can configure custom OpenAI / DeepSeek credentials, stored encrypted with authenticated AES-256-GCM.
 
 ---
 
-### 2. `frontend/` — Admin & Agent Dashboard
-* **Công nghệ:** Next.js 15 (App Router), TypeScript, Auth.js (NextAuth v5), Tailwind CSS, Radix UI / Shadcn, Lucide Icons, SWR / Axios.
-* **Tính năng chính:**
-  * **Quản trị Tổ chức & Trang web:** Tạo và quản lý thông tin các Site/Bot, cấp mã nhúng script tiện lợi.
-  * **Tùy biến Giao diện Chatbot (Appearance):** Tùy chỉnh màu chủ đạo (Primary Color), màu nền, biểu tượng launcher, avatar bot, tiêu đề cửa sổ và lời chào tự động.
-  * **Cấu hình Trí tuệ Nhân tạo & BYOK:** Chọn model ngôn ngữ (Qwen, GPT-4o...), điều chỉnh system prompt, nhiệt độ sáng tạo, cấu hình API key cá nhân hóa và test kết nối thời gian thực.
-  * **Hộp thư Live Agent (Inbox):** Giao diện trực chat thời gian thực cho Agent, xem danh sách hội thoại đang chờ, nhận thông báo đẩy (Audio & Toast notification), tiếp quản cuộc trò chuyện từ AI.
-  * **Quản lý Tri thức (Knowledge Base):** Tải lên tài liệu hướng dẫn, kích hoạt crawl website tự động, kiểm tra trạng thái phân tích văn bản.
-  * **Quản lý Lịch hẹn (Booking Management):** Bảng lịch trực quan (Calendar view), quản lý khung giờ, tài nguyên, danh sách lịch đặt của khách hàng và thao tác hủy/sửa lịch.
-  * **Báo cáo & Phân tích (Analytics):** Thống kê số lượng cuộc hội thoại, tỷ lệ phản hồi hữu ích (Helpful/Unhelpful ratio), thời gian phản hồi trung bình.
+### 2. `frontend/` — Admin & Live Agent Dashboard
+* **Tech Stack:** Next.js 15 (App Router), TypeScript, Auth.js (NextAuth v5), Tailwind CSS, Radix UI / Shadcn, Lucide Icons, SWR.
+* **Core Capabilities:**
+  * **Organization & Site Management:** Multi-bot provisioning, domain allowlist configuration, and 1-click script generator.
+  * **Branding & Appearance Customizer:** Live preview of custom brand color schemes, background colors, custom bot avatars, launcher icons, and welcome greetings.
+  * **AI Personality & BYOK Configuration:** Model selector (Qwen, GPT-4o, etc.), custom system prompts, temperature tuning, and on-demand connection testing.
+  * **Live Agent Inbox:** Real-time conversational console with audio/toast alerts, message queues, conversation history preview, and AI-to-Human handoff controls.
+  * **Knowledge Base Center:** Manual document file upload, on-demand web crawler triggers, and chunk indexing status tracking.
+  * **Booking & Calendar Management:** Visual appointment schedule, resource and service allocation, blackout periods, and manual booking overrides.
+  * **Analytics & Performance Metrics:** Total conversations, sentiment breakdown, helpful/unhelpful feedback ratios, and average response times.
 
 ---
 
 ### 3. `widget/` — Embeddable Visitor Chat & Booking Widget
-* **Công nghệ:** React 19, Vite, TypeScript, Zustand (Persistent state), Socket.IO Client, CSS Modules / Shadow DOM.
-* **Tính năng chính:**
-  * **Kích thước siêu nhẹ & Nhúng đơn giản:** Đóng gói thành file script độc lập (`ez-chat-widget.js`), chỉ cần 1 dòng thẻ `<script data-site-id="...">` là có thể nhúng vào mọi nền tảng (Wordpress, Shopify, Web tĩnh, React, Vue...).
-  * **Cách ly Style (Shadow DOM / Iframe):** Đảm bảo CSS của widget không bị ảnh hưởng bởi website chủ và ngược lại.
-  * **Luồng đặt lịch trực tiếp (Inline Booking Chips):** Khách hàng chọn dịch vụ, chọn nhân viên/tài nguyên, chọn ngày giờ còn trống ngay trong bong bóng chat mà không cần chuyển trang.
-  * **Phát trực tiếp tin nhắn AI (Real-time SSE / WS Streaming):** Hiệu ứng gõ chữ từng token mượt mà tương tự ChatGPT.
-  * **Chuyển giao người thật (Human Handoff):** Chuyển đổi trạng thái giao diện rõ ràng khi có tư vấn viên con người tham gia tiếp quản.
-  * **Đánh giá phản hồi (Message Feedback):** Nút Like/Dislike trên từng câu trả lời của AI giúp ghi nhận chất lượng phục vụ.
+* **Tech Stack:** React 19, Vite, TypeScript, Zustand (Persistent storage), Socket.IO Client, Shadow DOM isolation.
+* **Core Capabilities:**
+  * **Zero-Friction Script Embedding:** Bundled into a standalone, ultra-lightweight JavaScript bundle (`ez-chat-widget.js`) injected via a single `<script>` tag.
+  * **Shadow DOM Style Isolation:** Encapsulates styles so the host website's CSS never bleeds into the widget and vice versa.
+  * **Interactive Booking Chips:** Inline appointment flow allowing visitors to select services, choose staff members, pick open slots, and confirm appointments without leaving the chat.
+  * **Real-Time Token Streaming:** Low-latency token-by-token streaming (SSE and WebSockets) delivering ChatGPT-like responsiveness.
+  * **Agent Handoff Indicator:** Smooth UI state transitions when conversations switch from AI to human agents.
+  * **Customer Feedback:** Thumbs-up / thumbs-down buttons on AI responses to continuously measure and improve answer quality.
 
 ---
 
-### 4. `landing/` — Product Showcase & Live Demo
-* **Công nghệ:** HTML5 Semantic, Modern CSS3 (Glassmorphism, CSS Variables, Responsive), Vanilla JavaScript.
-* **Tính năng chính:**
-  * Giới thiệu tổng quan giải pháp, tính năng nổi bật, bảng giá dịch vụ và các bước tích hợp.
-  * **Trải nghiệm thực tế (Live Widget Demo):** Tích hợp sẵn chat widget hoạt động tương tác trực tiếp để khách tham quan trải nghiệm khả năng tư vấn và đặt lịch.
-  * Hỗ trợ đa ngôn ngữ giao diện (i18n Tiếng Việt / Tiếng Anh).
+### 4. `landing/` — SaaS Marketing & Interactive Demo
+* **Tech Stack:** Semantic HTML5, Modern CSS3 (Glassmorphism, CSS Custom Properties, Responsive Layouts), Vanilla JavaScript.
+* **Core Capabilities:**
+  * Comprehensive feature showcase, transparent pricing tiers, and integration tutorials.
+  * **Interactive Live Demo:** Features an embedded, functioning chat widget allowing prospective clients to experience conversational AI and appointment booking in real time.
+  * Multilingual presentation with localized content (English / Vietnamese).
 
 ---
 
 ### 5. `mcp/` — Model Context Protocol Server
-* **Công nghệ:** Node.js, TypeScript, Model Context Protocol SDK (`@modelcontextprotocol/sdk`), Axios, Zod.
-* **Tính năng chính:**
-  * Chuẩn hóa giao tiếp giữa các tác tử AI (AI Agents, Codex CLI, Claude Desktop, v.v.) và backend dữ liệu của EZ-Chatbot theo giao thức chuẩn **Model Context Protocol (MCP)**.
-  * **2 Chế độ hoạt động (Transports):**
-    * `stdio`: Khởi chạy như một CLI tool/child process cho Codex hoặc các ứng dụng máy trạm.
-    * `http`: Mở endpoint `POST /mcp` hỗ trợ Streamable HTTP cho Agent Backend.
-  * **Bộ Tools tiêu chuẩn:**
-    * `getConversationContext`: Truy xuất ngữ cảnh hội thoại hiện tại.
-    * `getUserDetails`: Lấy hồ sơ người dùng trong phạm vi bảo mật của Tenant.
-    * `getSiteConfig`: Đọc cấu hình vận hành và chính sách của Site.
-    * `searchKnowledge`: Tra cứu tri thức nội bộ từ kho RAG.
-    * `getAvailableSlots` / `holdSlot` / `createBooking` / `cancelBooking`: Thực hiện các thao tác kiểm tra và điều phối lịch hẹn.
-  * **Bảo mật:** Xác thực inter-service qua header `X-MCP-Secret` và context được ký số HMAC đảm bảo an toàn tuyệt đối cho mô hình đa người thuê.
+* **Tech Stack:** Node.js, TypeScript, Model Context Protocol SDK (`@modelcontextprotocol/sdk`), Axios, Zod.
+* **Core Capabilities:**
+  * Standardizes communication between autonomous AI agents (Codex CLI, Claude Desktop, Cursor, etc.) and the EZ-Chatbot backend ecosystem.
+  * **Dual Transports:**
+    * `stdio`: Direct standard I/O transport for local CLI execution and local desktop agents.
+    * `http`: Exposes a Streamable HTTP endpoint at `POST /mcp` for the LangGraph backend agent.
+  * **Standardized Tools:**
+    * `getConversationContext`: Fetches current session history and metadata.
+    * `getUserDetails`: Retrieves tenant-scoped visitor profile information safely.
+    * `getSiteConfig`: Reads operational hours, policies, and booking settings.
+    * `searchKnowledge`: Queries the site's vectorized knowledge base.
+    * `getAvailableSlots` / `holdSlot` / `createBooking` / `cancelBooking`: Coordinates booking transactions safely.
+  * **Inter-Service Security:** Protected via `X-MCP-Secret` headers and HMAC-signed context payloads ensuring multi-tenant isolation.
 
 ---
 
-## 🚀 Hướng Dẫn Cài Đặt & Chạy Cục Bộ (Quick Start Guide)
+## 🚀 Quick Start Guide
 
-### Yêu cầu tiên quyết
-* Node.js v20+ hoặc v24+
-* PostgreSQL v15+ (đã cài extension `pgvector`)
-* Redis v6+
-* Git
+### Prerequisites
+* **Node.js**: v20.x or v24.x LTS
+* **PostgreSQL**: v15+ with the `pgvector` extension enabled
+* **Redis**: v6+
+* **Git**
 
 ---
 
-### 1. Cấu hình biến môi trường
-Sao chép các file `.env.example` thành `.env` trong từng thư mục tương ứng:
+### 1. Environment Configuration
+
+Copy the example environment files across all service folders:
 
 ```bash
-# Backend
+# Backend API
 cp backend/.env.example backend/.env
 
 # Frontend Admin Dashboard
@@ -158,9 +159,9 @@ cp mcp/.env.example mcp/.env
 
 ---
 
-### 2. Cài đặt Dependencies & Khởi chạy từng dịch vụ
+### 2. Service Installation & Execution
 
-#### Bước 1: Khởi động Backend API (`backend/`)
+#### Step 1: Start Backend API (`backend/`)
 ```bash
 cd backend
 npm install
@@ -168,67 +169,67 @@ npm run migration:run
 npm run seed:super-admin
 npm run start:dev
 ```
-*API Backend sẽ lắng nghe tại: `http://localhost:3000` (Swagger docs tại `http://localhost:3000/api/v1/docs`)*
+*Backend API will run at `http://localhost:3000` (Swagger docs available at `http://localhost:3000/api/v1/docs`)*
 
-#### Bước 2: Khởi động MCP Server (`mcp/`)
+#### Step 2: Start MCP Server (`mcp/`)
 ```bash
 cd mcp
 npm install
 npm run build
 npm start
 ```
-*MCP Server sẽ lắng nghe tại: `http://localhost:3002/mcp`*
+*MCP Server endpoint will be available at `http://localhost:3002/mcp`*
 
-#### Bước 3: Khởi động Admin Dashboard (`frontend/`)
+#### Step 3: Start Admin Dashboard (`frontend/`)
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-*Bảng điều khiển quản trị mở tại: `http://localhost:3001`*
+*Admin Dashboard will run at `http://localhost:3001`*
 
-#### Bước 4: Khởi động Chat Widget (`widget/`)
+#### Step 4: Start Chat Widget (`widget/`)
 ```bash
 cd widget
 npm install
 npm run dev
 ```
-*Widget dev server mở tại: `http://localhost:5173` (hoặc build ra `dist/ez-chat-widget.js` với `npm run build`)*
+*Widget dev server runs at `http://localhost:5173` (or compile for production via `npm run build`)*
 
-#### Bước 5: Mở Landing Page (`landing/`)
+#### Step 5: Serve Landing Page (`landing/`)
 ```bash
 cd landing
-# Mở trực tiếp index.html bằng browser hoặc dùng server tĩnh:
+# Open index.html directly or serve using any static web server:
 npx serve .
 ```
 
 ---
 
-## 🌐 Bảng Cổng & Đường Dẫn Mặc Định (Ports & Endpoints)
+## 🌐 Default Ports & Endpoints
 
-| Dịch vụ | Cổng mặc định | Địa chỉ truy cập | Ghi chú |
+| Service | Port | Endpoint URL | Description |
 | :--- | :--- | :--- | :--- |
 | **Backend API** | `3000` | `http://localhost:3000` | REST API, Socket.IO, SSE |
-| **API Docs (Swagger)** | `3000` | `http://localhost:3000/api/v1/docs` | OpenAPI Specification |
-| **Admin Dashboard** | `3001` | `http://localhost:3001` | Quản trị viên & Agent |
-| **MCP Server** | `3002` | `http://localhost:3002/mcp` | Model Context Protocol Stream |
-| **Chat Widget Dev** | `5173` | `http://localhost:5173` | Dev & Live Preview |
-| **Landing Page** | `8000` | `http://localhost:8000` | Giới thiệu & Demo |
+| **Swagger Documentation** | `3000` | `http://localhost:3000/api/v1/docs` | OpenAPI 3.0 Interactive Docs |
+| **Admin Dashboard** | `3001` | `http://localhost:3001` | Multi-Tenant Management Portal |
+| **MCP Server** | `3002` | `http://localhost:3002/mcp` | Streamable HTTP Model Context Protocol |
+| **Chat Widget Dev Server** | `5173` | `http://localhost:5173` | Local Widget Testing & Preview |
+| **SaaS Landing Page** | `8000` | `http://localhost:8000` | Marketing Website & Demo |
 
 ---
 
-## 🔒 An Toàn Thông Tin & Bảo Mật (Security & Privacy)
+## 🔒 Security & Privacy Engineering
 
-Dự án tuân thủ các nguyên tắc bảo mật khắt khe:
-1. **Cô lập Đa Người dùng:** Ràng buộc Tenant ID / Site ID trên mọi câu lệnh truy vấn cơ sở dữ liệu và WebSocket rooms.
-2. **Bảo vệ Khóa bí mật (BYOK Encryption):** Khóa API cá nhân của khách hàng được mã hóa đối xứng chuẩn quân đội AES-256-GCM với IV ngẫu nhiên và Auth Tag chống giả mạo.
-3. **Phòng chống SSRF:** Trình thu thập crawler và URL validation sử dụng cơ chế phân giải DNS và thư viện kiểm tra IP để chặn hoàn toàn các truy cập tới mạng nội bộ hoặc dải IP máy chủ đám mây.
-4. **Kiểm duyệt nội dung (Content Moderation):** Hệ thống lọc nội dung độc hại tự động ngăn chặn spam, tấn công prompt injection hoặc hành vi vi phạm chính sách sử dụng.
-5. **Rate Limiting & Throttling:** Áp dụng giới hạn tần suất yêu cầu trên cả REST API và WebSocket kết nối.
+EZ-Chatbot enforces defence-in-depth principles:
+1. **Multi-Tenant Scoping:** All database queries, vector similarity searches, and WebSocket broadcasts strictly enforce Organization and Site ownership checks.
+2. **BYOK Secret Encryption:** Customer-provided AI provider API keys are encrypted using AES-256-GCM with distinct IVs and authentication tags.
+3. **SSRF Defense:** Web crawling engines resolve DNS hostnames prior to connection, explicitly dropping private IPv4/IPv6 ranges and cloud metadata IPs (`169.254.169.254`).
+4. **Content Moderation:** Automated moderation filters check inbound user queries to detect prompt injection, abuse, and inappropriate content.
+5. **Rate Limiting:** Granular throttling guards against brute force and DDoS attempts across HTTP endpoints and WebSocket connections.
 
 ---
 
-## 📄 Bản Quyền (License)
+## 📄 License
 
-Dự án được phân phối dưới giấy phép [MIT License](LICENSE).
-Mọi thắc mắc hoặc yêu cầu hỗ trợ, vui lòng tạo Issue trên GitHub repository.
+This project is licensed under the [MIT License](LICENSE).
+For inquiries, bug reports, or enterprise support, please open an issue in this repository.
